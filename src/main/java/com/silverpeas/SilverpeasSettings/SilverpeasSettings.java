@@ -69,7 +69,7 @@ public class SilverpeasSettings {
   };
   private static ArrayList xmlFiles;
   private static final String SILVERPEAS_SETTINGS_VERSION = "SilverpeasSettings V5.0";
-  protected static final String DIR_SETTINGS = DirectoryLocator.getSilverpeasHome() + "/silverpeas/setup/settings";
+  protected static final String DIR_SETTINGS = DirectoryLocator.getSilverpeasHome() + "/setup/settings";
   protected static final String FIRST_FILE_SETTINGS = "SilverpeasSettings.xml";
   // ici nouveauté t003 : vérification des dépendances
   protected static final String DEPENDENCIES_TAG = "dependencies";
