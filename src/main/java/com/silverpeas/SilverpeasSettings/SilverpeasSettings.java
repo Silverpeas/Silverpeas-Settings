@@ -51,27 +51,17 @@ import com.silverpeas.installedtree.DirectoryLocator;
 import com.silverpeas.xml.XmlTreeHandler;
 import com.silverpeas.xml.xpath.XPath;
 
-/**
- * @Description :
- * 
- * @Copyright : Copyright (c) 2001
- * @Société : Silverpeas
- * @author STR
- * @version 1.0
- */
 public class SilverpeasSettings {
 
   protected static File fileLog = null;
   protected static PrintWriter bufLog = null;
   protected static XPath _xpathEngine = null;
-  private static final String[] TAGS_TO_MERGE = { "global-vars", "fileset" };
+  private static final String[] TAGS_TO_MERGE = {"global-vars", "fileset"};
   private static ArrayList xmlFiles;
   private static final String SILVERPEAS_SETTINGS_VERSION = "SilverpeasSettings V5.0";
-  protected static final String DIR_SETTINGS = DirectoryLocator
-      .getSilverpeasHome()
+  protected static final String DIR_SETTINGS = DirectoryLocator.getSilverpeasHome()
       + "/setup/settings";
   protected static final String FIRST_FILE_SETTINGS = "SilverpeasSettings.xml";
-  // ici nouveauté t003 : vérification des dépendances
   protected static final String DEPENDENCIES_TAG = "dependencies";
   protected static final String SETTINGSFILE_TAG = "settingsfile";
   protected static final String SETTINGSFILENAME_ATTRIB = "name";
@@ -156,9 +146,6 @@ public class SilverpeasSettings {
         resultBase += (baseUnixSep ? "/" : "\\") + "..";
       }
     }
-
-    // PATH
-
     // removes drive
     if (result.length() >= 2 && result.charAt(1) == ':') {
       result = result.substring(2);
@@ -170,11 +157,7 @@ public class SilverpeasSettings {
         && result.charAt(0) != (baseUnixSep ? '/' : '\\')) {
       result = (baseUnixSep ? "/" : "\\") + result;
     }
-
-    // RESULT
-
     result = resultBase + result;
-
     return result;
   }
 
@@ -188,8 +171,7 @@ public class SilverpeasSettings {
           + " (" + new java.util.Date() + ").");
       fileLog = new File(DirectoryLocator.getLogHome()
           + "/SilverpeasSettings.log");
-      bufLog = new PrintWriter(new BufferedWriter(new FileWriter(fileLog
-          .getAbsolutePath(), true)));
+      bufLog = new PrintWriter(new BufferedWriter(new FileWriter(fileLog.getAbsolutePath(), true)));
       displayMessageln(System.getProperty("line.separator")
           + "************************************************************************");
       displayMessageln("start settings of Silverpeas (" + new java.util.Date()
@@ -223,10 +205,7 @@ public class SilverpeasSettings {
           displayMessageln(f.getName());
           XmlDocument fXml = new XmlDocument(dirXml, f.getName());
           fXml.load();
-
-          // ici nouveauté t003 : vérification des dépendances
           boolean dependenciesOK = checkDependencies(xmlFiles, fXml);
-
           // prise en compte uniquement si dependences OK
           if (dependenciesOK) {
             fileXml.mergeWith(TAGS_TO_MERGE, fXml);
@@ -255,14 +234,10 @@ public class SilverpeasSettings {
           Element eltVar = (Element) iterVars.next();
           String name = eltVar.getAttributeValue("name");
           String value = eltVar.getAttributeValue("value");
-          // ici nouveauté t005 : evaluation dynamique
-          // value = gv.resolveString( value );
           value = gv.resolveAndEvalString(value);
 
           String relativePath = eltVar.getAttributeValue(RELATIVE_VALUE_ATTRIB);
           if (relativePath != null && !relativePath.equals("")) {
-            // ici nouveauté t005 : evaluation dynamique
-            // relativePath= gv.resolveString(relativePath);
             relativePath = gv.resolveAndEvalString(relativePath);
             value = getRelativePath(relativePath, value);
           }
@@ -270,7 +245,6 @@ public class SilverpeasSettings {
           displayMessageln("nom : " + name + "\t value : " + value);
         }
       }
-
       // liste des chemins des fichiers
       displayMessageln(System.getProperty("line.separator")
           + "modified files :");
@@ -322,8 +296,6 @@ public class SilverpeasSettings {
   private static void configfile(String dir, Element eltConfigFile,
       GestionVariables gv) throws Exception {
     String dirFile = dir + eltConfigFile.getAttributeValue("name");
-    // ici nouveauté t005 : evaluation dynamique
-    // dirFile = gv.resolveString( dirFile );
     dirFile = gv.resolveAndEvalString(dirFile);
     String typeFile = FileUtil.getExtension(dirFile);
     displayMessageln(dirFile);
@@ -339,8 +311,6 @@ public class SilverpeasSettings {
         Element eltParameter = (Element) iterParameter.next();
         String key = eltParameter.getAttributeValue("key");
         String value = eltParameter.getTextTrim();
-        // ici nouveauté t005 : evaluation dynamique
-        // value = gv.resolveString( value );
         value = gv.resolveAndEvalString(value);
         fic.addModification(key, value);
         displayMessageln("\tkey = " + key + "\t value = " + value);
@@ -360,8 +330,6 @@ public class SilverpeasSettings {
         while (iterValue.hasNext()) {
           Element eltValue = (Element) iterValue.next();
           String value = eltValue.getTextTrim();
-          // ici nouveauté t005 : evaluation dynamique
-          // value = gv.resolveString( value );
           value = gv.resolveAndEvalString(value);
           eltMultiValue.addValue(value);
           displayMessageln("\tkey = " + key + "\t value = " + value);
@@ -369,8 +337,7 @@ public class SilverpeasSettings {
         fic.addModification(eltMultiValue);
       }
       fic.executeModification();
-    }
-    // fichiers properties
+    } // fichiers properties
     else if (typeFile.equalsIgnoreCase("properties")) {
       ModifProperties fic = new ModifProperties(dirFile);
 
@@ -381,16 +348,12 @@ public class SilverpeasSettings {
         Element eltParameter = (Element) iterParameter.next();
         String key = eltParameter.getAttributeValue("key");
         String value = eltParameter.getTextTrim();
-        // ici nouveauté t005 : evaluation dynamique
-        // value = gv.resolveString( value );
         value = gv.resolveAndEvalString(value);
         fic.addModification(key, value);
         displayMessageln("\tkey = " + key + "\t value = " + value);
       }
       fic.executeModification();
     } else {
-
-      // throw new Exception("mauvais type de fichier : " + dirFile);
       // fichiers fonctionnants avec le mode key '=' value
       ModifTextSilverpeas fic = new ModifTextSilverpeas(dirFile);
 
@@ -401,8 +364,6 @@ public class SilverpeasSettings {
         Element eltParameter = (Element) iterParameter.next();
         String key = eltParameter.getAttributeValue("key");
         String value = eltParameter.getTextTrim();
-        // ici nouveauté t005 : evaluation dynamique
-        // value = gv.resolveString( value );
         value = gv.resolveAndEvalString(value);
         fic.addModification(key, value);
         displayMessageln("\tkey = " + key + "\t value = " + value);
@@ -415,7 +376,6 @@ public class SilverpeasSettings {
   private static void textfile(String dir, Element eltTextFile,
       GestionVariables gv) throws Exception {
     String dirFile = dir + eltTextFile.getAttributeValue("name");
-    // ici nouveauté t005 : evaluation dynamique
     dirFile = gv.resolveString(dirFile);
     dirFile = gv.resolveAndEvalString(dirFile);
     File modifFile = new File(dirFile);
@@ -425,7 +385,6 @@ public class SilverpeasSettings {
     }
     displayMessageln(dirFile);
     ModifText fic = new ModifText(dirFile);
-
     // liste des parametres a modifier
     List listeParameter = eltTextFile.getChildren("parameter");
     Iterator iterParameter = listeParameter.iterator();
@@ -434,8 +393,6 @@ public class SilverpeasSettings {
       String key = eltParameter.getAttributeValue("key");
       String option = eltParameter.getAttributeValue("use-regex");
       String value = eltParameter.getTextTrim();
-      // ici nouveauté t005 : evaluation dynamique
-      // value = gv.resolveString( value );
       value = gv.resolveAndEvalString(value);
       if (option != null && option.equalsIgnoreCase("true")) {
         displayMessageln("\tregex = " + key + "\t value = " + value);
@@ -450,17 +407,10 @@ public class SilverpeasSettings {
     fic.executeModification();
   }
 
-  // ---------------------------------------------------------------------
-
-  // ---------------------------------------------------------------------
-  /**
-   * @param errMsg
-   * @see
-   */
   private static void xmlfile(String dir, Element eltConfigFile,
       GestionVariables gv) throws Exception {
     String dirFile = dir + eltConfigFile.getAttributeValue("name");
-    // ici nouveauté t005 : evaluation dynamique
+    // ici nouveautï¿½ t005 : evaluation dynamique
     // dirFile = gv.resolveString( dirFile );
     dirFile = gv.resolveAndEvalString(dirFile);
     displayMessageln(dirFile);
@@ -478,8 +428,6 @@ public class SilverpeasSettings {
     while (iterParameter.hasNext()) {
       Element eltParameter = (Element) iterParameter.next();
       String key = eltParameter.getAttributeValue("key");
-      // ici nouveauté t005 : evaluation dynamique
-      // key = gv.resolveString(key);
       key = gv.resolveAndEvalString(key);
       String mode = eltParameter.getAttributeValue(XPATH_MODE_ATTRIB);
       displayMessageln("\t" + key + " (mode:" + getXmlModeString(mode) + ")");
@@ -503,19 +451,12 @@ public class SilverpeasSettings {
         while (iterValue.hasNext()) {
           Element eltValue = (Element) iterValue.next();
           String location = eltValue.getAttributeValue(VALUE_LOCATION_ATTRIB);
-          // ici nouveauté t005 : evaluation dynamique
-          // location = gv.resolveString(location);
           location = gv.resolveAndEvalString(location);
           String childMode = eltValue.getAttributeValue(XPATH_MODE_ATTRIB);
           String value = eltValue.getTextTrim();
-          // ici nouveauté t005 : evaluation dynamique
-          // value = gv.resolveString( value );
           value = gv.resolveAndEvalString(value);
-          String relativePath = eltValue
-              .getAttributeValue(RELATIVE_VALUE_ATTRIB);
+          String relativePath = eltValue.getAttributeValue(RELATIVE_VALUE_ATTRIB);
           if (relativePath != null && !relativePath.equals("")) {
-            // ici nouveauté t005 : evaluation dynamique
-            // relativePath= gv.resolveString(relativePath);
             relativePath = gv.resolveAndEvalString(relativePath);
             value = getRelativePath(relativePath, value);
           }
@@ -525,8 +466,7 @@ public class SilverpeasSettings {
           getXPathEngine().setMode(XmlTreeHandler.MODE_SELECT);
           getXPathEngine().parse();
           if (!backuped
-              && (!getXPathEngine().exists().booleanValue() || !getXPathEngine()
-                  .getValue().equals(value))) {
+              && (!getXPathEngine().exists().booleanValue() || !getXPathEngine().getValue().equals(value))) {
             BackupFile bf = new BackupFile(dirFileFile);
             bf.makeBackup();
             backuped = true;
@@ -544,14 +484,9 @@ public class SilverpeasSettings {
         }
       } else {
         String value = eltParameter.getTextTrim();
-        // ici nouveauté t005 : evaluation dynamique
-        // value = gv.resolveString( value );
         value = gv.resolveAndEvalString(value);
-        String relativePath = eltParameter
-            .getAttributeValue(RELATIVE_VALUE_ATTRIB);
+        String relativePath = eltParameter.getAttributeValue(RELATIVE_VALUE_ATTRIB);
         if (relativePath != null && !relativePath.equals("")) {
-          // ici nouveauté t005 : evaluation dynamique
-          // relativePath= gv.resolveString(relativePath);
           relativePath = gv.resolveAndEvalString(relativePath);
           value = getRelativePath(relativePath, value);
         }
@@ -573,19 +508,13 @@ public class SilverpeasSettings {
   private static void copyfile(String dir, Element eltTextFile,
       GestionVariables gv) throws Exception {
     String dirFile = dir + eltTextFile.getAttributeValue("name");
-    // ici nouveauté t005 : evaluation dynamique
-    // dirFile = gv.resolveString( dirFile );
     dirFile = gv.resolveAndEvalString(dirFile);
     File sourceFile = new File(dirFile);
     String destFile = eltTextFile.getTextTrim();
-    // ici nouveauté t005 : evaluation dynamique
-    // destFile = gv.resolveString( destFile );
     destFile = gv.resolveAndEvalString(destFile);
     File destFileFile = new File(destFile);
     if (!destFileFile.isAbsolute()) {
       destFile = dir + destFile;
-      // ici nouveauté t005 : evaluation dynamique
-      // destFile = gv.resolveString( destFile );
       destFile = gv.resolveAndEvalString(destFile);
       destFileFile = new File(destFile);
     }
@@ -602,11 +531,6 @@ public class SilverpeasSettings {
         + "\tcopied to " + destFile);
   }
 
-  // ---------------------------------------------------------------------
-  /**
-   * @param errMsg
-   * @see
-   */
   private static void printError(String errMsg) {
     if (bufLog != null) {
       displayMessageln(System.getProperty("line.separator") + errMsg);
@@ -614,25 +538,13 @@ public class SilverpeasSettings {
     }
     System.out.println(System.getProperty("line.separator") + errMsg
         + System.getProperty("line.separator"));
-    // System.exit( 1 );
   }
 
-  // ---------------------------------------------------------------------
-  /**
-   * @param msg
-   * @see
-   */
-  private static void displayMessageln(String msg) {
 
-    // displayMessage(msg + "\n");
+  private static void displayMessageln(String msg) {
     displayMessage(msg + System.getProperty("line.separator"));
   }
 
-  // ---------------------------------------------------------------------
-  /**
-   * @param msg
-   * @see
-   */
   private static void displayMessage(String msg) {
     if (bufLog != null) {
       bufLog.print(msg);
@@ -642,50 +554,29 @@ public class SilverpeasSettings {
     }
   }
 
-  // ---------------------------------------------------------------------
-  // ici nouveauté t003 : vérification des dépendances
   private static boolean checkDependencies(ArrayList listeFileXml,
       XmlDocument fXml) {
-
-    // liste des dépendences
     Element root = fXml.getDocument().getRootElement(); // Get the root element
-    List listeDependencies = root.getChildren(DEPENDENCIES_TAG);
-
-    if (listeDependencies != null) {
-
-      Iterator iterDependencies = listeDependencies.iterator();
-      while (iterDependencies.hasNext()) {
-
-        Element eltDependencies = (Element) iterDependencies.next();
-        List listeDependencyFiles = eltDependencies
-            .getChildren(SETTINGSFILE_TAG);
-        Iterator iterDependencyFiles = listeDependencyFiles.iterator();
-
-        while (iterDependencyFiles.hasNext()) {
-
-          Element eltDependencyFile = (Element) iterDependencyFiles.next();
-          String name = eltDependencyFile
-              .getAttributeValue(SETTINGSFILENAME_ATTRIB);
-
+    List<Element> listeDependencies = root.getChildren(DEPENDENCIES_TAG);
+    if (listeDependencies != null && !listeDependencies.isEmpty()) {
+      for (Element eltDependencies : listeDependencies) {
+        List<Element> listeDependencyFiles = eltDependencies.getChildren(SETTINGSFILE_TAG);
+        for (Element eltDependencyFile : listeDependencyFiles) {
+          String name = eltDependencyFile.getAttributeValue(SETTINGSFILENAME_ATTRIB);
           boolean found = false;
           for (int i = 0; i < listeFileXml.size(); i++) {
             File f = (File) xmlFiles.get(i);
-
             if (f.getName().equals(name)) {
               found = true;
               i = listeFileXml.size();
             }
           }
-
           if (found == false) {
             return false;
           }
-        } // while
-
-      } // while
-
-    } // if
-
+        }
+      }
+    }
     return true;
   }
 }
