@@ -56,10 +56,11 @@ public class SilverpeasSettings {
   protected static File fileLog = null;
   protected static PrintWriter bufLog = null;
   protected static XPath _xpathEngine = null;
-  private static final String[] TAGS_TO_MERGE = {"global-vars", "fileset"};
+  private static final String[] TAGS_TO_MERGE = { "global-vars", "fileset" };
   private static ArrayList xmlFiles;
   private static final String SILVERPEAS_SETTINGS_VERSION = "SilverpeasSettings V5.0";
-  protected static final String DIR_SETTINGS = DirectoryLocator.getSilverpeasHome()
+  protected static final String DIR_SETTINGS = DirectoryLocator
+      .getSilverpeasHome()
       + "/setup/settings";
   protected static final String FIRST_FILE_SETTINGS = "SilverpeasSettings.xml";
   protected static final String DEPENDENCIES_TAG = "dependencies";
@@ -171,7 +172,8 @@ public class SilverpeasSettings {
           + " (" + new java.util.Date() + ").");
       fileLog = new File(DirectoryLocator.getLogHome()
           + "/SilverpeasSettings.log");
-      bufLog = new PrintWriter(new BufferedWriter(new FileWriter(fileLog.getAbsolutePath(), true)));
+      bufLog = new PrintWriter(new BufferedWriter(new FileWriter(fileLog
+          .getAbsolutePath(), true)));
       displayMessageln(System.getProperty("line.separator")
           + "************************************************************************");
       displayMessageln("start settings of Silverpeas (" + new java.util.Date()
@@ -455,7 +457,8 @@ public class SilverpeasSettings {
           String childMode = eltValue.getAttributeValue(XPATH_MODE_ATTRIB);
           String value = eltValue.getTextTrim();
           value = gv.resolveAndEvalString(value);
-          String relativePath = eltValue.getAttributeValue(RELATIVE_VALUE_ATTRIB);
+          String relativePath = eltValue
+              .getAttributeValue(RELATIVE_VALUE_ATTRIB);
           if (relativePath != null && !relativePath.equals("")) {
             relativePath = gv.resolveAndEvalString(relativePath);
             value = getRelativePath(relativePath, value);
@@ -466,7 +469,8 @@ public class SilverpeasSettings {
           getXPathEngine().setMode(XmlTreeHandler.MODE_SELECT);
           getXPathEngine().parse();
           if (!backuped
-              && (!getXPathEngine().exists().booleanValue() || !getXPathEngine().getValue().equals(value))) {
+              && (!getXPathEngine().exists().booleanValue() || !getXPathEngine()
+                  .getValue().equals(value))) {
             BackupFile bf = new BackupFile(dirFileFile);
             bf.makeBackup();
             backuped = true;
@@ -485,7 +489,8 @@ public class SilverpeasSettings {
       } else {
         String value = eltParameter.getTextTrim();
         value = gv.resolveAndEvalString(value);
-        String relativePath = eltParameter.getAttributeValue(RELATIVE_VALUE_ATTRIB);
+        String relativePath = eltParameter
+            .getAttributeValue(RELATIVE_VALUE_ATTRIB);
         if (relativePath != null && !relativePath.equals("")) {
           relativePath = gv.resolveAndEvalString(relativePath);
           value = getRelativePath(relativePath, value);
@@ -539,7 +544,6 @@ public class SilverpeasSettings {
     System.out.println(System.getProperty("line.separator") + errMsg
         + System.getProperty("line.separator"));
   }
-
 
   private static void displayMessageln(String msg) {
     displayMessage(msg + System.getProperty("line.separator"));
