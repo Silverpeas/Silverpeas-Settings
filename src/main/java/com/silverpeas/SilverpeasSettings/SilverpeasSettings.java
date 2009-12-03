@@ -470,7 +470,7 @@ public class SilverpeasSettings {
           getXPathEngine().parse();
           if (!backuped
               && (!getXPathEngine().exists().booleanValue() || !getXPathEngine()
-                  .getValue().equals(value))) {
+              .getValue().equals(value))) {
             BackupFile bf = new BackupFile(dirFileFile);
             bf.makeBackup();
             backuped = true;
@@ -524,6 +524,10 @@ public class SilverpeasSettings {
       destFileFile = new File(destFile);
     }
     if (sourceFile.isDirectory()) {
+      if (destFileFile.exists()) {
+        FileUtil.deleteFiles(destFile);
+        destFileFile.mkdir();
+      }
       FileUtil.copyDir(sourceFile, destFileFile);
     } else {
       if (destFileFile.exists()) {
