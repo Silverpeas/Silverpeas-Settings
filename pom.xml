@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.silverpeas</groupId>
@@ -10,15 +9,15 @@
   </parent>
 
   <scm>
-    <connection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/services/silverpeas-settings/trunk</connection>
-    <developerConnection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/services/silverpeas-settings/trunk</developerConnection>
-    <url>https://repository.silverpeas.org/svn/silverpeas/services/silverpeas-settings/trunk</url>
+    <connection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/services/silverpeas-settings/tags/silverpeas-settings-1.0</connection>
+    <developerConnection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/services/silverpeas-settings/tags/silverpeas-settings-1.0</developerConnection>
+    <url>https://repository.silverpeas.org/svn/silverpeas/services/silverpeas-settings/tags/silverpeas-settings-1.0</url>
   </scm>
   
   <groupId>com.silverpeas.builder</groupId>
   <artifactId>silverpeas-settings</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <name>SilverpeasSettings</name>
   
   <dependencies>
