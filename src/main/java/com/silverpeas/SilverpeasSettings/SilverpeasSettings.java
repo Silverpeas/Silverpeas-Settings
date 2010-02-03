@@ -38,14 +38,14 @@ import java.util.StringTokenizer;
 import org.jdom.Document;
 import org.jdom.Element;
 
-import com.silverpeas.FileUtil.BackupFile;
-import com.silverpeas.FileUtil.ElementMultiValues;
-import com.silverpeas.FileUtil.FileUtil;
-import com.silverpeas.FileUtil.GestionVariables;
-import com.silverpeas.FileUtil.ModifProperties;
-import com.silverpeas.FileUtil.ModifText;
-import com.silverpeas.FileUtil.ModifTextSilverpeas;
-import com.silverpeas.FileUtil.ModifXMLSilverpeas;
+import com.silverpeas.file.BackupFile;
+import com.silverpeas.file.ElementMultiValues;
+import com.silverpeas.file.FileUtil;
+import com.silverpeas.file.GestionVariables;
+import com.silverpeas.file.ModifProperties;
+import com.silverpeas.file.ModifText;
+import com.silverpeas.file.ModifTextSilverpeas;
+import com.silverpeas.file.ModifXMLSilverpeas;
 import com.silverpeas.applicationbuilder.XmlDocument;
 import com.silverpeas.installedtree.DirectoryLocator;
 import com.silverpeas.xml.XmlTreeHandler;
@@ -53,36 +53,36 @@ import com.silverpeas.xml.xpath.XPath;
 
 public class SilverpeasSettings {
 
-  protected static File fileLog = null;
-  protected static PrintWriter bufLog = null;
-  protected static XPath _xpathEngine = null;
+  static File fileLog = null;
+  static PrintWriter bufLog = null;
+  static XPath _xpathEngine = null;
   private static final String[] TAGS_TO_MERGE = { "global-vars", "fileset" };
   private static ArrayList xmlFiles;
-  private static final String SILVERPEAS_SETTINGS_VERSION = "SilverpeasSettings V5.0";
+  private static final String TOOL_VERSION = "SilverpeasSettings V5.0";
   protected static final String DIR_SETTINGS = DirectoryLocator
       .getSilverpeasHome()
       + "/setup/settings";
-  protected static final String FIRST_FILE_SETTINGS = "SilverpeasSettings.xml";
+  protected static final String SILVERPEAS_SETTINGS = "SilverpeasSettings.xml";
   protected static final String DEPENDENCIES_TAG = "dependencies";
   protected static final String SETTINGSFILE_TAG = "settingsfile";
-  protected static final String SETTINGSFILENAME_ATTRIB = "name";
+  static final String FILENAME_ATT = "name";
   protected static final String CONFIG_FILE_TAG = "configfile";
   protected static final String TEXT_FILE_TAG = "textfile";
   protected static final String COPY_FILE_TAG = "copyfile";
   protected static final String COPY_DIR_TAG = "copydir";
   protected static final String XML_FILE_TAG = "xmlfile";
   protected static final String XPATH_MODE_ATTRIB = "mode";
-  protected static Map _modeMap = null;
-  protected static final String VALUE_LOCATION_ATTRIB = "location";
-  protected static final String RELATIVE_VALUE_ATTRIB = "relative-to";
+  static Map _modeMap = null;
+  static final String VALUE_LOCATION_ATTRIB = "location";
+  static final String RELATIVE_VALUE_ATTRIB = "relative-to";
 
   static {
     _modeMap = new HashMap(5);
-    _modeMap.put("select", new Character(XmlTreeHandler.MODE_SELECT));
-    _modeMap.put("insert", new Character(XmlTreeHandler.MODE_INSERT));
-    _modeMap.put("update", new Character(XmlTreeHandler.MODE_UPDATE));
-    _modeMap.put("delete", new Character(XmlTreeHandler.MODE_DELETE));
-    _modeMap.put("unique", new Character(XmlTreeHandler.MODE_UNIQUE));
+    _modeMap.put("select", Character.valueOf(XmlTreeHandler.MODE_SELECT));
+    _modeMap.put("insert", Character.valueOf(XmlTreeHandler.MODE_INSERT));
+    _modeMap.put("update", Character.valueOf(XmlTreeHandler.MODE_UPDATE));
+    _modeMap.put("delete", Character.valueOf(XmlTreeHandler.MODE_DELETE));
+    _modeMap.put("unique", Character.valueOf(XmlTreeHandler.MODE_UNIQUE));
   }
 
   protected static char getXmlMode(String textualMode) {
@@ -106,7 +106,7 @@ public class SilverpeasSettings {
     return _xpathEngine;
   }
 
-  protected static String getRelativePath(String base, String path) {
+  protected static String getRelativePath(final String base, final String path) {
     String result = path;
     String relBase = base;
     String resultBase = null;
@@ -168,7 +168,7 @@ public class SilverpeasSettings {
    */
   public static void main(String[] args) {
     try {
-      System.out.println("start settings of " + SILVERPEAS_SETTINGS_VERSION
+      System.out.println("start settings of " + TOOL_VERSION
           + " (" + new java.util.Date() + ").");
       fileLog = new File(DirectoryLocator.getLogHome()
           + "/SilverpeasSettings.log");
@@ -182,12 +182,12 @@ public class SilverpeasSettings {
         throw new Exception("parameters forbidden");
       }
       File dirXml = new File(DIR_SETTINGS);
-      XmlDocument fileXml = new XmlDocument(dirXml, FIRST_FILE_SETTINGS);
+      XmlDocument fileXml = new XmlDocument(dirXml, SILVERPEAS_SETTINGS);
       fileXml.load();
 
       // merge tous les fichiers de configurations
       displayMessageln(System.getProperty("line.separator")
-          + "merged files with " + FIRST_FILE_SETTINGS + " :");
+          + "merged files with " + SILVERPEAS_SETTINGS + " :");
 
       // Tri par ordre alphabetique
       xmlFiles = new java.util.ArrayList();
@@ -203,7 +203,7 @@ public class SilverpeasSettings {
         displayMessageln("Is File = " + f.isFile() + " - Extension: "
             + FileUtil.getExtension(f) + " - Nom =" + f.getName());
         if (f.isFile() && FileUtil.getExtension(f).equals("xml")
-            && !(f.getName().equalsIgnoreCase(FIRST_FILE_SETTINGS))) {
+            && !(f.getName().equalsIgnoreCase(SILVERPEAS_SETTINGS))) {
           displayMessageln(f.getName());
           XmlDocument fXml = new XmlDocument(dirXml, f.getName());
           fXml.load();
@@ -570,7 +570,7 @@ public class SilverpeasSettings {
       for (Element eltDependencies : listeDependencies) {
         List<Element> listeDependencyFiles = eltDependencies.getChildren(SETTINGSFILE_TAG);
         for (Element eltDependencyFile : listeDependencyFiles) {
-          String name = eltDependencyFile.getAttributeValue(SETTINGSFILENAME_ATTRIB);
+          String name = eltDependencyFile.getAttributeValue(FILENAME_ATT);
           boolean found = false;
           for (int i = 0; i < listeFileXml.size(); i++) {
             File f = (File) xmlFiles.get(i);
