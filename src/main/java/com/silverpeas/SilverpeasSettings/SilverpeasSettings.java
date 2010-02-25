@@ -39,7 +39,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 import com.silverpeas.file.BackupFile;
-import com.silverpeas.file.ElementMultiValues;
 import com.silverpeas.file.FileUtil;
 import com.silverpeas.file.GestionVariables;
 import com.silverpeas.file.ModifProperties;
@@ -47,6 +46,7 @@ import com.silverpeas.file.ModifText;
 import com.silverpeas.file.ModifTextSilverpeas;
 import com.silverpeas.file.ModifXMLSilverpeas;
 import com.silverpeas.applicationbuilder.XmlDocument;
+import com.silverpeas.file.RegexpElementMotif;
 import com.silverpeas.installedtree.DirectoryLocator;
 import com.silverpeas.xml.XmlTreeHandler;
 import com.silverpeas.xml.xpath.XPath;
@@ -59,9 +59,8 @@ public class SilverpeasSettings {
   private static final String[] TAGS_TO_MERGE = { "global-vars", "fileset" };
   private static ArrayList xmlFiles;
   private static final String TOOL_VERSION = "SilverpeasSettings V5.0";
-  protected static final String DIR_SETTINGS = DirectoryLocator
-      .getSilverpeasHome()
-      + "/setup/settings";
+  protected static final String DIR_SETTINGS =
+      DirectoryLocator.getSilverpeasHome() + "/setup/settings";
   protected static final String SILVERPEAS_SETTINGS = "SilverpeasSettings.xml";
   protected static final String DEPENDENCIES_TAG = "dependencies";
   protected static final String SETTINGSFILE_TAG = "settingsfile";
@@ -305,7 +304,6 @@ public class SilverpeasSettings {
     // fichiers xml
     if (typeFile.equalsIgnoreCase("xml")) {
       ModifXMLSilverpeas fic = new ModifXMLSilverpeas(dirFile);
-
       // liste des parametres a modifier
       List listeParameter = eltConfigFile.getChildren("parameter");
       Iterator iterParameter = listeParameter.iterator();
@@ -316,27 +314,6 @@ public class SilverpeasSettings {
         value = gv.resolveAndEvalString(value);
         fic.addModification(key, value);
         displayMessageln("\tkey = " + key + "\t value = " + value);
-      }
-
-      // liste des multiparametres a modifier
-      List listeMultiparameter = eltConfigFile.getChildren("multiparameter");
-      Iterator iterMultiparameter = listeMultiparameter.iterator();
-      while (iterMultiparameter.hasNext()) {
-        Element eltMultiparameter = (Element) iterMultiparameter.next();
-        String key = eltMultiparameter.getAttributeValue("key");
-        ElementMultiValues eltMultiValue = new ElementMultiValues(key);
-
-        // liste des valeurs
-        List listeValue = eltMultiparameter.getChildren("value");
-        Iterator iterValue = listeValue.iterator();
-        while (iterValue.hasNext()) {
-          Element eltValue = (Element) iterValue.next();
-          String value = eltValue.getTextTrim();
-          value = gv.resolveAndEvalString(value);
-          eltMultiValue.addValue(value);
-          displayMessageln("\tkey = " + key + "\t value = " + value);
-        }
-        fic.addModification(eltMultiValue);
       }
       fic.executeModification();
     } // fichiers properties
@@ -396,10 +373,10 @@ public class SilverpeasSettings {
       String option = eltParameter.getAttributeValue("use-regex");
       String value = eltParameter.getTextTrim();
       value = gv.resolveAndEvalString(value);
-      if (option != null && option.equalsIgnoreCase("true")) {
+      if ("true".equalsIgnoreCase(option)) {
         displayMessageln("\tregex = " + key + "\t value = " + value);
-        ElementMultiValues emv = new ElementMultiValues(key);
-        emv.addValue(value);
+        RegexpElementMotif emv = new RegexpElementMotif(key);
+        emv.setRemplacement(value);
         fic.addModification(emv);
       } else {
         fic.addModification(key, value);
