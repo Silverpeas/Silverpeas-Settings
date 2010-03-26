@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<silverpeas-settings product="Silverpeas">
+  <global-vars>
+    <!-- INSTALLATION DIRECTORY -->
+    <var name="SILVERPEAS_HOME_DEPENDANT" value="${SILVERPEAS_HOME}"/>
+    <var name="SILVERPEAS_DATA_HOME" value="${SILVERPEAS_HOME}"/>
+    <var name="SILVERPEAS_DATA_HOME_DEPENDANT" value="${SILVERPEAS_HOME}"/>
+
+	<!-- SILVERPEAS DATABASE CONNECTION INFO -->
+    <var name="DB_SERVERTYPE" value="POSTGRES"/>
+    <var name="DB_SERVER" value="localhost"/>
+    <var name="DB_USER" value="postgres"/>
+    <var name="DB_PASSWD" value="postgres"/>
+    <var name="DB_NAME" value="SilverpeasV5"/>
+    <var name="SQL_LISTEN_PORT_MSSQL" value="1433"/>
+    <var name="SQL_LISTEN_PORT_ORACLE" value="1521"/>
+    <var name="SQL_LISTEN_PORT_POSTGRES" value="5432"/>
+
+
+    <!-- Silverpeas Adminitrator infos -->
+    <var name="ADMIN_LOGIN" value="SilverAdmin"/>
+    <var name="ADMIN_PASSWD" value="SilverAdmin"/>
+    <var name="ADMIN_EMAIL" value="silveradmin@localhost"/>
+    <var name="URL_SERVER" value="http://localhost:8000"/>
+  </global-vars>
+
+    <!-- PROPERTIES CONFIGURATION -->
+  <fileset root="${SILVERPEAS_HOME}/initialize/">
+    <configfile name="systemSettings.properties">
+      <parameter key="http.proxyHost">${PROXY_HOST}</parameter>
+      <parameter key="http.proxyPort">${PROXY_PORT}</parameter>
+      <parameter key="http.nonProxyHosts">${NONPROXY_HOST}</parameter>
+      <parameter key="ftp.proxyHost">${PROXY_HOST}</parameter>
+      <parameter key="ftp.proxyPort">${PROXY_PORT}</parameter>
+      <parameter key="ftp.nonProxyHosts">${NONPROXY_HOST}</parameter>
+    </configfile>
+  </fileset>
+
+		<!-- 1) COM/STRATELIA/WEBACTIV : -->
+  <fileset root="${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/">
+
+    <configfile name="util/jcr.properties">
+      <parameter key="jcr.configuration.persistence.manager">${JACKRABBIT_PERSIST}</parameter>
+      <parameter key="jcr.home.dir.url">file:///${SILVERPEAS_DATA_HOME}/data/jackrabbit</parameter>
+    </configfile>
+
+  </fileset>
+
+</silverpeas-settings>

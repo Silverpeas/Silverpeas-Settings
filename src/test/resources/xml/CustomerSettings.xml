@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<silverpeas-settings product="Silverpeas">
+  <global-vars>
+    
+	<!-- SILVERPEAS DATABASE CONNECTION INFO -->
+    <var name="DB_SERVERTYPE" value="POSTGRES"/>
+    <var name="DB_SERVER" value="silver-db"/>
+    <var name="DB_USER" value="silver"/>
+    <var name="DB_PASSWD" value="silver"/>
+    <var name="DB_NAME" value="Silverpeas"/>
+    <var name="SQL_LISTEN_PORT_POSTGRES" value="5432"/>
+
+
+    <!-- Silverpeas Adminitrator infos -->
+    <var name="ADMIN_LOGIN" value="Silverpeas"/>
+    <var name="ADMIN_PASSWD" value="Silverpeas"/>
+    <var name="ADMIN_EMAIL" value="test@silverpeas.com"/>
+    <var name="URL_SERVER" value="http://www.silverpeas.com"/>
+  </global-vars>
+
+
+		<!-- 1) COM/STRATELIA/WEBACTIV : -->
+  <fileset root="${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/">
+    <configfile name="util/jcr.properties">
+      <parameter key="jcr.configuration.persistence.manager">Test</parameter>
+      <parameter key="jcr.home.dir.url">file:///${SILVERPEAS_DATA_HOME}/data/jackrabbit</parameter>
+    </configfile>
+  </fileset>
+
+</silverpeas-settings>

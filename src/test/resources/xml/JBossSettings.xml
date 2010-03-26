@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<silverpeas-settings product="Configuration_JBoss_Server">
+
+  <global-vars>
+	<!-- debut ******* variables à paramètrer ******* -->
+    <var name="JBOSS_LISTEN_PORT" value="8000"/>
+    <var name="RAM_MIN" value="512"/>
+    <var name="RAM_MAX" value="512"/>
+    <var name="JBOSS_VERSION" value="4.0.3"/>
+    <!-- <var name="JBOSS_VERSION" value="5.1"/> -->
+	<!-- fin ******* variables à paramètrer ******* -->
+    <var name="JBOSS_SERVER" value="${JBOSS_HOME}/server/default"/>
+    <var name="JBOSS_START" value="bin/run.bat"/>
+    <var name="JBOSS_CONF" value="bin/run.bat"/>
+    <var name="DATASOURCE" value="java:/Silverpeas"/>
+  </global-vars>
+
+
+  <fileset root="${JAR_HOME}/">
+    <copyfile name="silverpeas.ear">${JBOSS_SERVER}/deploy/silverpeas.ear</copyfile>
+  </fileset>
+
+  <fileset root="${SILVERPEAS_HOME}/setup/appserver/jboss${JBOSS_VERSION}/">
+    <copyfile name="silverpeas-destinations-service.xml">
+      ${JBOSS_SERVER}/deploy/jms/silverpeas-destinations-service.xml
+    </copyfile>
+    <copyfile name="silverpeas-ds.xml">
+      ${JBOSS_SERVER}/deploy/silverpeas-ds.xml
+    </copyfile>
+  </fileset>
+     
+  <fileset root="${JBOSS_HOME}/">
+    <textfile name="${JBOSS_CONF}">
+      <parameter key="-Xms[0-9]+m" use-regex="true">-Xms${RAM_MIN}m</parameter>
+      <parameter key="-Xmx[0-9]+m" use-regex="true">-Xmx${RAM_MAX}m</parameter>
+    </textfile>
+  </fileset>
+</silverpeas-settings>

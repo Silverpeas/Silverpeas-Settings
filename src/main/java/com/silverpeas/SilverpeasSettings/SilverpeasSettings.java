@@ -23,11 +23,12 @@
  */
 package com.silverpeas.SilverpeasSettings;
 
+import com.silverpeas.applicationbuilder.AppBuilderException;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,17 +51,22 @@ import com.silverpeas.file.RegexpElementMotif;
 import com.silverpeas.installedtree.DirectoryLocator;
 import com.silverpeas.xml.XmlTreeHandler;
 import com.silverpeas.xml.xpath.XPath;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import org.apache.commons.io.FileUtils;
 
 public class SilverpeasSettings {
 
+  static final String NEW_LINE = System.getProperty("line.separator");
   static File fileLog = null;
   static PrintWriter bufLog = null;
   static XPath _xpathEngine = null;
   private static final String[] TAGS_TO_MERGE = { "global-vars", "fileset" };
-  private static ArrayList xmlFiles;
+  private static List<File> xmlFiles;
   private static final String TOOL_VERSION = "SilverpeasSettings V5.0";
-  protected static final String DIR_SETTINGS =
-      DirectoryLocator.getSilverpeasHome() + "/setup/settings";
+  protected static final String DIR_SETTINGS = DirectoryLocator.getSilverpeasHome()
+      + "/setup/settings";
   protected static final String SILVERPEAS_SETTINGS = "SilverpeasSettings.xml";
   protected static final String DEPENDENCIES_TAG = "dependencies";
   protected static final String SETTINGSFILE_TAG = "settingsfile";
@@ -71,12 +77,11 @@ public class SilverpeasSettings {
   protected static final String COPY_DIR_TAG = "copydir";
   protected static final String XML_FILE_TAG = "xmlfile";
   protected static final String XPATH_MODE_ATTRIB = "mode";
-  static Map _modeMap = null;
+  static final Map _modeMap = new HashMap(5);
   static final String VALUE_LOCATION_ATTRIB = "location";
   static final String RELATIVE_VALUE_ATTRIB = "relative-to";
 
   static {
-    _modeMap = new HashMap(5);
     _modeMap.put("select", Character.valueOf(XmlTreeHandler.MODE_SELECT));
     _modeMap.put("insert", Character.valueOf(XmlTreeHandler.MODE_INSERT));
     _modeMap.put("update", Character.valueOf(XmlTreeHandler.MODE_UPDATE));
@@ -134,8 +139,7 @@ public class SilverpeasSettings {
     if (relBase == null || relBase.length() == 0) {
       nbLevel = 0;
     } else {
-      StringTokenizer st = new StringTokenizer(relBase, baseUnixSep ? "/"
-          : "\\");
+      StringTokenizer st = new StringTokenizer(relBase, baseUnixSep ? "/" : "\\");
       nbLevel = st.countTokens();
     }
     // creates the base (../.. etc)
@@ -167,13 +171,11 @@ public class SilverpeasSettings {
    */
   public static void main(String[] args) {
     try {
-      System.out.println("start settings of " + TOOL_VERSION
-          + " (" + new java.util.Date() + ").");
+      System.out.println("start settings of " + TOOL_VERSION + " (" + new Date() + ").");
       fileLog = new File(DirectoryLocator.getLogHome()
           + "/SilverpeasSettings.log");
-      bufLog = new PrintWriter(new BufferedWriter(new FileWriter(fileLog
-          .getAbsolutePath(), true)));
-      displayMessageln(System.getProperty("line.separator")
+      bufLog = new PrintWriter(new BufferedWriter(new FileWriter(fileLog.getAbsolutePath(), true)));
+      displayMessageln(NEW_LINE
           + "************************************************************************");
       displayMessageln("start settings of Silverpeas (" + new java.util.Date()
           + ").");
@@ -185,70 +187,15 @@ public class SilverpeasSettings {
       fileXml.load();
 
       // merge tous les fichiers de configurations
-      displayMessageln(System.getProperty("line.separator")
-          + "merged files with " + SILVERPEAS_SETTINGS + " :");
+      displayMessageln(NEW_LINE + "merged files with " + SILVERPEAS_SETTINGS + " :");
 
-      // Tri par ordre alphabetique
-      xmlFiles = new java.util.ArrayList();
-      File[] listeFileXml = dirXml.listFiles();
-      for (int i = 0; i < listeFileXml.length; i++) {
-        xmlFiles.add(listeFileXml[i]);
-        displayMessageln(xmlFiles.get(i).toString());
-      }
-      Collections.sort(xmlFiles);
-
-      for (int i = 0; i < xmlFiles.size(); i++) {
-        File f = (File) xmlFiles.get(i);
-        displayMessageln("Is File = " + f.isFile() + " - Extension: "
-            + FileUtil.getExtension(f) + " - Nom =" + f.getName());
-        if (f.isFile() && FileUtil.getExtension(f).equals("xml")
-            && !(f.getName().equalsIgnoreCase(SILVERPEAS_SETTINGS))) {
-          displayMessageln(f.getName());
-          XmlDocument fXml = new XmlDocument(dirXml, f.getName());
-          fXml.load();
-          boolean dependenciesOK = checkDependencies(xmlFiles, fXml);
-          // prise en compte uniquement si dependences OK
-          if (dependenciesOK) {
-            fileXml.mergeWith(TAGS_TO_MERGE, fXml);
-          } else {
-            displayMessageln("Ignore " + f.getName()
-                + " file because dependencies are not resolved.");
-          }
-        }
-      }
-
+      mergeConfigurationFiles(fileXml, dirXml);
       Document doc = fileXml.getDocument();
-
       // Get the root element
       Element root = doc.getRootElement();
-      GestionVariables gv = new GestionVariables();
-
-      // liste des var globales
-      displayMessageln(System.getProperty("line.separator") + "var :");
-      List listeGlobalVars = root.getChildren("global-vars");
-      Iterator iterGlobalVars = listeGlobalVars.iterator();
-      while (iterGlobalVars.hasNext()) {
-        Element eltGlobalVar = (Element) iterGlobalVars.next();
-        List listeVars = eltGlobalVar.getChildren("var");
-        Iterator iterVars = listeVars.iterator();
-        while (iterVars.hasNext()) {
-          Element eltVar = (Element) iterVars.next();
-          String name = eltVar.getAttributeValue("name");
-          String value = eltVar.getAttributeValue("value");
-          value = gv.resolveAndEvalString(value);
-
-          String relativePath = eltVar.getAttributeValue(RELATIVE_VALUE_ATTRIB);
-          if (relativePath != null && !relativePath.equals("")) {
-            relativePath = gv.resolveAndEvalString(relativePath);
-            value = getRelativePath(relativePath, value);
-          }
-          gv.addVariable(name, value);
-          displayMessageln("nom : " + name + "\t value : " + value);
-        }
-      }
+      GestionVariables gv = loadGlobalVariables(root);
       // liste des chemins des fichiers
-      displayMessageln(System.getProperty("line.separator")
-          + "modified files :");
+      displayMessageln(NEW_LINE + "modified files :");
       List listeFileSet = root.getChildren("fileset");
       Iterator iterFileSet = listeFileSet.iterator();
       while (iterFileSet.hasNext()) {
@@ -276,13 +223,11 @@ public class SilverpeasSettings {
           }
         } // while actions
       } // while fileset
-      displayMessageln(System.getProperty("line.separator")
-          + "settings of Silverpeas successfuly done(" + new java.util.Date()
-          + ").");
+      displayMessageln(NEW_LINE + "Silverpeas has been successfuly configured (" + new Date() +
+          ").");
       bufLog.close();
-      System.out.println(System.getProperty("line.separator")
-          + "settings of Silverpeas successfuly done (" + new java.util.Date()
-          + ").");
+      System.out.println(NEW_LINE + "Silverpeas has been successfuly configured (" + new Date() +
+          ").");
     } catch (Exception e) {
       printError(e.toString());
       e.printStackTrace();
@@ -302,7 +247,7 @@ public class SilverpeasSettings {
     displayMessageln(dirFile);
 
     // fichiers xml
-    if (typeFile.equalsIgnoreCase("xml")) {
+    if ("xml".equalsIgnoreCase(typeFile)) {
       ModifXMLSilverpeas fic = new ModifXMLSilverpeas(dirFile);
       // liste des parametres a modifier
       List listeParameter = eltConfigFile.getChildren("parameter");
@@ -317,7 +262,7 @@ public class SilverpeasSettings {
       }
       fic.executeModification();
     } // fichiers properties
-    else if (typeFile.equalsIgnoreCase("properties")) {
+    else if ("properties".equalsIgnoreCase(typeFile)) {
       ModifProperties fic = new ModifProperties(dirFile);
 
       // liste des parametres a modifier
@@ -434,8 +379,7 @@ public class SilverpeasSettings {
           String childMode = eltValue.getAttributeValue(XPATH_MODE_ATTRIB);
           String value = eltValue.getTextTrim();
           value = gv.resolveAndEvalString(value);
-          String relativePath = eltValue
-              .getAttributeValue(RELATIVE_VALUE_ATTRIB);
+          String relativePath = eltValue.getAttributeValue(RELATIVE_VALUE_ATTRIB);
           if (relativePath != null && !relativePath.equals("")) {
             relativePath = gv.resolveAndEvalString(relativePath);
             value = getRelativePath(relativePath, value);
@@ -446,8 +390,9 @@ public class SilverpeasSettings {
           getXPathEngine().setMode(XmlTreeHandler.MODE_SELECT);
           getXPathEngine().parse();
           if (!backuped
-              && (!getXPathEngine().exists().booleanValue() || !getXPathEngine()
-              .getValue().equals(value))) {
+              &&
+              (!getXPathEngine().exists().booleanValue() || !getXPathEngine().getValue().equals(
+              value))) {
             BackupFile bf = new BackupFile(dirFileFile);
             bf.makeBackup();
             backuped = true;
@@ -466,8 +411,7 @@ public class SilverpeasSettings {
       } else {
         String value = eltParameter.getTextTrim();
         value = gv.resolveAndEvalString(value);
-        String relativePath = eltParameter
-            .getAttributeValue(RELATIVE_VALUE_ATTRIB);
+        String relativePath = eltParameter.getAttributeValue(RELATIVE_VALUE_ATTRIB);
         if (relativePath != null && !relativePath.equals("")) {
           relativePath = gv.resolveAndEvalString(relativePath);
           value = getRelativePath(relativePath, value);
@@ -513,21 +457,19 @@ public class SilverpeasSettings {
       }
       FileUtil.copyFile(sourceFile, destFileFile);
     }
-    displayMessageln(dirFile + System.getProperty("line.separator")
-        + "\tcopied to " + destFile);
+    displayMessageln(dirFile + System.getProperty("line.separator") + "\tcopied to " + destFile);
   }
 
   private static void printError(String errMsg) {
     if (bufLog != null) {
-      displayMessageln(System.getProperty("line.separator") + errMsg);
+      displayMessageln(NEW_LINE + errMsg);
       bufLog.close();
     }
-    System.out.println(System.getProperty("line.separator") + errMsg
-        + System.getProperty("line.separator"));
+    System.out.println(NEW_LINE + errMsg + NEW_LINE);
   }
 
   private static void displayMessageln(String msg) {
-    displayMessage(msg + System.getProperty("line.separator"));
+    displayMessage(msg + NEW_LINE);
   }
 
   private static void displayMessage(String msg) {
@@ -539,8 +481,7 @@ public class SilverpeasSettings {
     }
   }
 
-  private static boolean checkDependencies(ArrayList listeFileXml,
-      XmlDocument fXml) {
+  private static boolean checkDependencies(List<File> listeFileXml, XmlDocument fXml) {
     Element root = fXml.getDocument().getRootElement(); // Get the root element
     List<Element> listeDependencies = root.getChildren(DEPENDENCIES_TAG);
     if (listeDependencies != null && !listeDependencies.isEmpty()) {
@@ -550,7 +491,7 @@ public class SilverpeasSettings {
           String name = eltDependencyFile.getAttributeValue(FILENAME_ATT);
           boolean found = false;
           for (int i = 0; i < listeFileXml.size(); i++) {
-            File f = (File) xmlFiles.get(i);
+            File f = xmlFiles.get(i);
             if (f.getName().equals(name)) {
               found = true;
               i = listeFileXml.size();
@@ -563,5 +504,55 @@ public class SilverpeasSettings {
       }
     }
     return true;
+  }
+
+  public static GestionVariables loadGlobalVariables(Element root) throws Exception {
+    GestionVariables gv = new GestionVariables();
+    // liste des var globales
+    displayMessageln(NEW_LINE + "var :");
+    List<Element> listeGlobalVars = root.getChildren("global-vars");
+    for (Element eltGlobalVar : listeGlobalVars) {
+      List<Element> listeVars = eltGlobalVar.getChildren("var");
+      for (Element eltVar : listeVars) {
+        String name = eltVar.getAttributeValue("name");
+        String value = gv.resolveAndEvalString(eltVar.getAttributeValue("value"));
+        String relativePath = eltVar.getAttributeValue(RELATIVE_VALUE_ATTRIB);
+        if (relativePath != null && !relativePath.equals("")) {
+          relativePath = gv.resolveAndEvalString(relativePath);
+          value = getRelativePath(relativePath, value);
+        }
+        gv.addVariable(name, value);
+        displayMessageln("nom : " + name + "\t value : " + value);
+      }
+    }
+    return gv;
+  }
+
+  public static void mergeConfigurationFiles(XmlDocument fileXml, File dirXml) throws IOException,
+      AppBuilderException {
+    // Tri par ordre alphabetique
+    xmlFiles =
+        new ArrayList<File>((Collection<File>) FileUtils.listFiles(dirXml, new String[] { "xml" },
+        false));
+    Collections.sort(xmlFiles);
+    for (File xmlFile : xmlFiles) {
+      displayMessageln(xmlFile.toString());
+    }
+    for (File f : xmlFiles) {
+      displayMessageln("Is File = " + f.isFile() + " - Extension: " + FileUtil.getExtension(f) +
+          " - Nom =" + f.getName());
+      if (!(SILVERPEAS_SETTINGS.equalsIgnoreCase(f.getName()))) {
+        displayMessageln(f.getName());
+        XmlDocument fXml = new XmlDocument(dirXml, f.getName());
+        fXml.load();
+        boolean dependenciesOK = checkDependencies(xmlFiles, fXml);
+        // prise en compte uniquement si dependences OK
+        if (dependenciesOK) {
+          fileXml.mergeWith(TAGS_TO_MERGE, fXml);
+        } else {
+          displayMessageln("Ignore " + f.getName() + " file because dependencies are not resolved.");
+        }
+      }
+    }
   }
 }

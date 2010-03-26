@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<silverpeas-settings product="Silverpeas">
+  <global-vars>
+    <!-- INSTALLATION DIRECTORY -->
+    <var name="SILVERPEAS_HOME_DEPENDANT" value="${SILVERPEAS_HOME}" />
+    <var name="SILVERPEAS_DATA_HOME" value="${SILVERPEAS_HOME}" />
+    <var name="SILVERPEAS_DATA_HOME_DEPENDANT" value="${SILVERPEAS_HOME}" />
+    <!-- SILVERPEAS DATABASE CONNECTION INFO -->
+    <var name="DB_SERVERTYPE" value="POSTGRES" />
+    <var name="DB_SERVER" value="localhost" />
+    <var name="DB_USER" value="postgres" />
+    <var name="DB_PASSWD" value="postgres" />
+    <var name="DB_NAME" value="SilverpeasV5" />
+    <var name="SQL_LISTEN_PORT_MSSQL" value="1433" />
+    <var name="SQL_LISTEN_PORT_ORACLE" value="1521" />
+    <var name="SQL_LISTEN_PORT_POSTGRES" value="5432" />
+    <!-- Silverpeas Adminitrator infos -->
+    <var name="ADMIN_LOGIN" value="SilverAdmin" />
+    <var name="ADMIN_PASSWD" value="SilverAdmin" />
+    <var name="ADMIN_EMAIL" value="silveradmin@localhost" />
+    <var name="URL_SERVER" value="http://localhost:8000" />
+  </global-vars>
+  <!-- PROPERTIES CONFIGURATION -->
+  <fileset root="${SILVERPEAS_HOME}/initialize/">
+    <configfile name="systemSettings.properties">
+      <parameter key="http.proxyHost">${PROXY_HOST}</parameter>
+      <parameter key="http.proxyPort">${PROXY_PORT}</parameter>
+      <parameter key="http.nonProxyHosts">${NONPROXY_HOST}</parameter>
+      <parameter key="ftp.proxyHost">${PROXY_HOST}</parameter>
+      <parameter key="ftp.proxyPort">${PROXY_PORT}</parameter>
+      <parameter key="ftp.nonProxyHosts">${NONPROXY_HOST}</parameter>
+    </configfile>
+  </fileset>
+  <!-- 1) COM/STRATELIA/WEBACTIV : -->
+  <fileset root="${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/">
+    <configfile name="util/jcr.properties">
+      <parameter key="jcr.configuration.persistence.manager">${JACKRABBIT_PERSIST}</parameter>
+      <parameter key="jcr.home.dir.url">file:///${SILVERPEAS_DATA_HOME}/data/jackrabbit</parameter>
+    </configfile>
+  </fileset>
+  <global-vars>
+    <!-- SILVERPEAS DATABASE CONNECTION INFO -->
+    <var name="DB_SERVERTYPE" value="POSTGRES" />
+    <var name="DB_SERVER" value="silver-db" />
+    <var name="DB_USER" value="silver" />
+    <var name="DB_PASSWD" value="silver" />
+    <var name="DB_NAME" value="Silverpeas" />
+    <var name="SQL_LISTEN_PORT_POSTGRES" value="5432" />
+    <!-- Silverpeas Adminitrator infos -->
+    <var name="ADMIN_LOGIN" value="Silverpeas" />
+    <var name="ADMIN_PASSWD" value="Silverpeas" />
+    <var name="ADMIN_EMAIL" value="test@silverpeas.com" />
+    <var name="URL_SERVER" value="http://www.silverpeas.com" />
+  </global-vars>
+  <fileset root="${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/">
+    <configfile name="util/jcr.properties">
+      <parameter key="jcr.configuration.persistence.manager">Test</parameter>
+      <parameter key="jcr.home.dir.url">file:///${SILVERPEAS_DATA_HOME}/data/jackrabbit</parameter>
+    </configfile>
+  </fileset>
+  <global-vars>
+    <!-- debut ******* variables à paramètrer ******* -->
+    <var name="JBOSS_LISTEN_PORT" value="8000" />
+    <var name="RAM_MIN" value="512" />
+    <var name="RAM_MAX" value="512" />
+    <var name="JBOSS_VERSION" value="4.0.3" />
+    <!-- <var name="JBOSS_VERSION" value="5.1"/> -->
+    <!-- fin ******* variables à paramètrer ******* -->
+    <var name="JBOSS_SERVER" value="${JBOSS_HOME}/server/default" />
+    <var name="JBOSS_START" value="bin/run.bat" />
+    <var name="JBOSS_CONF" value="bin/run.bat" />
+    <var name="DATASOURCE" value="java:/Silverpeas" />
+  </global-vars>
+  <fileset root="${JAR_HOME}/">
+    <copyfile name="silverpeas.ear">${JBOSS_SERVER}/deploy/silverpeas.ear</copyfile>
+  </fileset>
+  <fileset root="${SILVERPEAS_HOME}/setup/appserver/jboss${JBOSS_VERSION}/">
+    <copyfile name="silverpeas-destinations-service.xml">${JBOSS_SERVER}/deploy/jms/silverpeas-destinations-service.xml</copyfile>
+    <copyfile name="silverpeas-ds.xml">${JBOSS_SERVER}/deploy/silverpeas-ds.xml</copyfile>
+  </fileset>
+  <fileset root="${JBOSS_HOME}/">
+    <textfile name="${JBOSS_CONF}">
+      <parameter key="-Xms[0-9]+m" use-regex="true">-Xms${RAM_MIN}m</parameter>
+      <parameter key="-Xmx[0-9]+m" use-regex="true">-Xmx${RAM_MAX}m</parameter>
+    </textfile>
+  </fileset>
+</silverpeas-settings>
+
