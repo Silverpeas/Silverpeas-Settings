@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>5.0</version>
+    <version>12</version>
   </parent>
 
   <scm>
@@ -41,6 +41,16 @@
       <plugin>
         <groupId>org.silverpeas.services</groupId>
         <artifactId>code-formatter-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <environmentVariables>
+            <SILVERPEAS_HOME>${project.basedir}/target/temp/silverpeas</SILVERPEAS_HOME>
+            <JBOSS_HOME>${project.basedir}/target/temp/jboss</JBOSS_HOME>
+          </environmentVariables>
+        </configuration>
       </plugin>
     </plugins>
   </build>

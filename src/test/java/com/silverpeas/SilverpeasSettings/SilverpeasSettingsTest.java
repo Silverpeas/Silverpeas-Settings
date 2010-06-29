@@ -50,6 +50,7 @@ public class SilverpeasSettingsTest {
 
   /**
    * Test of loadGlobalVariables method, of class SilverpeasSettings.
+   * @throws Exception 
    */
   @Test
   public void testLoadGlobalVariables() throws Exception {
@@ -68,6 +69,7 @@ public class SilverpeasSettingsTest {
 
   /**
    * Test of mergeConfigurationFiles method, of class SilverpeasSettings.
+   * @throws Exception 
    */
   @Test
   public void testMergeConfigurationFiles() throws Exception {

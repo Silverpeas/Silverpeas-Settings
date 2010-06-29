@@ -68,6 +68,7 @@ public class SilverpeasSettings {
   protected static final String DIR_SETTINGS = DirectoryLocator.getSilverpeasHome()
       + "/setup/settings";
   protected static final String SILVERPEAS_SETTINGS = "SilverpeasSettings.xml";
+  protected static final String SILVERPEAS_CONFIG = "config.xml";
   protected static final String DEPENDENCIES_TAG = "dependencies";
   protected static final String SETTINGSFILE_TAG = "settingsfile";
   static final String FILENAME_ATT = "name";
@@ -183,8 +184,12 @@ public class SilverpeasSettings {
         throw new Exception("parameters forbidden");
       }
       File dirXml = new File(DIR_SETTINGS);
-      XmlDocument fileXml = new XmlDocument(dirXml, SILVERPEAS_SETTINGS);
+      XmlDocument fileXml = new XmlDocument(dirXml, SILVERPEAS_CONFIG);
       fileXml.load();
+
+      XmlDocument fXml = new XmlDocument(dirXml, SILVERPEAS_SETTINGS);
+      fXml.load();
+      fileXml.mergeWith(TAGS_TO_MERGE, fXml);
 
       // merge tous les fichiers de configurations
       displayMessageln(NEW_LINE + "merged files with " + SILVERPEAS_SETTINGS + " :");
@@ -223,11 +228,11 @@ public class SilverpeasSettings {
           }
         } // while actions
       } // while fileset
-      displayMessageln(NEW_LINE + "Silverpeas has been successfuly configured (" + new Date() +
-          ").");
+      displayMessageln(NEW_LINE + "Silverpeas has been successfuly configured (" + new Date()
+          + ").");
       bufLog.close();
-      System.out.println(NEW_LINE + "Silverpeas has been successfuly configured (" + new Date() +
-          ").");
+      System.out.println(NEW_LINE + "Silverpeas has been successfuly configured (" + new Date()
+          + ").");
     } catch (Exception e) {
       printError(e.toString());
       e.printStackTrace();
@@ -390,8 +395,7 @@ public class SilverpeasSettings {
           getXPathEngine().setMode(XmlTreeHandler.MODE_SELECT);
           getXPathEngine().parse();
           if (!backuped
-              &&
-              (!getXPathEngine().exists().booleanValue() || !getXPathEngine().getValue().equals(
+              && (!getXPathEngine().exists().booleanValue() || !getXPathEngine().getValue().equals(
               value))) {
             BackupFile bf = new BackupFile(dirFileFile);
             bf.makeBackup();
@@ -490,11 +494,10 @@ public class SilverpeasSettings {
         for (Element eltDependencyFile : listeDependencyFiles) {
           String name = eltDependencyFile.getAttributeValue(FILENAME_ATT);
           boolean found = false;
-          for (int i = 0; i < listeFileXml.size(); i++) {
+          for (int i = 0; i < listeFileXml.size() && !found; i++) {
             File f = xmlFiles.get(i);
             if (f.getName().equals(name)) {
               found = true;
-              i = listeFileXml.size();
             }
           }
           if (found == false) {
@@ -539,9 +542,10 @@ public class SilverpeasSettings {
       displayMessageln(xmlFile.toString());
     }
     for (File f : xmlFiles) {
-      displayMessageln("Is File = " + f.isFile() + " - Extension: " + FileUtil.getExtension(f) +
-          " - Nom =" + f.getName());
-      if (!(SILVERPEAS_SETTINGS.equalsIgnoreCase(f.getName()))) {
+      displayMessageln("Is File = " + f.isFile() + " - Extension: " + FileUtil.getExtension(f)
+          + " - Nom =" + f.getName());
+      if (!(SILVERPEAS_SETTINGS.equalsIgnoreCase(f.getName()) || SILVERPEAS_CONFIG
+          .equalsIgnoreCase(f.getName()))) {
         displayMessageln(f.getName());
         XmlDocument fXml = new XmlDocument(dirXml, f.getName());
         fXml.load();
