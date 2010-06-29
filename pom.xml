@@ -8,15 +8,15 @@
   </parent>
 
   <scm>
-    <connection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/services/silverpeas-settings/trunk</connection>
-    <developerConnection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/services/silverpeas-settings/trunk</developerConnection>
-    <url>https://repository.silverpeas.org/svn/silverpeas/services/silverpeas-settings/trunk</url>
+    <connection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/services/silverpeas-settings/tags/silverpeas-settings-1.4</connection>
+    <developerConnection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/services/silverpeas-settings/tags/silverpeas-settings-1.4</developerConnection>
+    <url>https://repository.silverpeas.org/svn/silverpeas/services/silverpeas-settings/tags/silverpeas-settings-1.4</url>
   </scm>
   
   <groupId>com.silverpeas.builder</groupId>
   <artifactId>silverpeas-settings</artifactId>
   <packaging>jar</packaging>
-  <version>1.4-SNAPSHOT</version>
+  <version>1.4</version>
   <name>SilverpeasSettings</name>
   
   <dependencies>
