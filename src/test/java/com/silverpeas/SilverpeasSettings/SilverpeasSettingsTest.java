@@ -1,27 +1,46 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright (C) 2000 - 2009 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.SilverpeasSettings;
 
-import java.util.List;
-import org.jdom.Document;
-import java.io.OutputStream;
-import org.apache.commons.io.FileUtils;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 import com.silverpeas.applicationbuilder.XmlDocument;
 import com.silverpeas.file.GestionVariables;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.List;
+import org.apache.commons.io.FileUtils;
+import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -61,10 +80,10 @@ public class SilverpeasSettingsTest {
     // Get the root element
     Element root = doc.getRootElement();
     GestionVariables gv = SilverpeasSettings.loadGlobalVariables(root);
-    assertEquals("test@silverpeas.com", gv.getValue("ADMIN_EMAIL"));
-    assertEquals("http://www.silverpeas.com", gv.getValue("URL_SERVER"));
-    assertEquals("5432", gv.getValue("SQL_LISTEN_PORT_POSTGRES"));
-    assertEquals("silver", gv.getValue("DB_PASSWD"));
+    Assert.assertEquals("test@silverpeas.com", gv.getValue("ADMIN_EMAIL"));
+    Assert.assertEquals("http://www.silverpeas.com", gv.getValue("URL_SERVER"));
+    Assert.assertEquals("5432", gv.getValue("SQL_LISTEN_PORT_POSTGRES"));
+    Assert.assertEquals("silver", gv.getValue("DB_PASSWD"));
   }
 
   /**
@@ -92,10 +111,10 @@ public class SilverpeasSettingsTest {
     List<String> expectedtLines = FileUtils.readLines(new File(System.getProperty("basedir")
             + File.separatorChar + "target" + File.separatorChar + "test-classes"
             + File.separatorChar + "expected" + File.separatorChar + "MergedSettings.xml"), "UTF-8");
-    assertNotNull(resultLines);
-    assertEquals(expectedtLines.size(), resultLines.size());
+    Assert.assertNotNull(resultLines);
+    Assert.assertEquals(expectedtLines.size(), resultLines.size());
     for(int i = 0; i < resultLines.size(); i++) {
-      assertEquals(expectedtLines.get(i), resultLines.get(i));
+      Assert.assertEquals(expectedtLines.get(i), resultLines.get(i));
     }
   }
 }
