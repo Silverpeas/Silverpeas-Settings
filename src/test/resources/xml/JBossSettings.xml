@@ -1,15 +1,41 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2009 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://repository.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
 
 <silverpeas-settings product="Configuration_JBoss_Server">
 
   <global-vars>
-	<!-- debut ******* variables à paramètrer ******* -->
+	<!-- debut ******* variables Ã  paramÃ¨trer ******* -->
     <var name="JBOSS_LISTEN_PORT" value="8000"/>
     <var name="RAM_MIN" value="512"/>
     <var name="RAM_MAX" value="512"/>
     <var name="JBOSS_VERSION" value="4.0.3"/>
     <!-- <var name="JBOSS_VERSION" value="5.1"/> -->
-	<!-- fin ******* variables à paramètrer ******* -->
+	<!-- fin ******* variables Ã  paramÃ¨trer ******* -->
     <var name="JBOSS_SERVER" value="${JBOSS_HOME}/server/default"/>
     <var name="JBOSS_START" value="bin/run.bat"/>
     <var name="JBOSS_CONF" value="bin/run.bat"/>
@@ -29,7 +55,7 @@
       ${JBOSS_SERVER}/deploy/silverpeas-ds.xml
     </copyfile>
   </fileset>
-     
+
   <fileset root="${JBOSS_HOME}/">
     <textfile name="${JBOSS_CONF}">
       <parameter key="-Xms[0-9]+m" use-regex="true">-Xms${RAM_MIN}m</parameter>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+
+    Copyright (C) 2000 - 2009 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://repository.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<Server>
+    <!-- Use a custom version of StandardService that allows the
+   connectors to be started independent of the normal lifecycle
+   start to allow web apps to be deployed before starting the
+   connectors.
+   -->
+    <Service className="org.jboss.web.tomcat.tc5.StandardService" name="jboss.web">
+        <!-- A HTTP/1.1 Connector on port 8080 -->
+        <Connector URIEncoding="UTF-8" acceptCount="100" address="${jboss.bind.address}" connectionTimeout="20000" disableUploadTimeout="true" emptySessionPath="true" enableLookups="false" maxHttpHeaderSize="8192" maxThreads="250" port="9500" redirectPort="8443" strategy="ms"/>
+        <!-- Add this option to the connector to avoid problems with
+          .NET clients that don't implement HTTP/1.1 correctly
+         restrictedUserAgents="^.*MS Web Services Client Protocol 1.1.4322.*$"
+      -->
+        <!-- A AJP 1.3 Connector on port 8009 -->
+        <Connector address="${jboss.bind.address}" emptySessionPath="true" enableLookups="false" port="8009" protocol="AJP/1.3" redirectPort="8443"/>
+        <Engine defaultHost="localhost" name="jboss.web">
+            <Host autoDeploy="false" deployOnStartup="false" deployXML="false" name="localhost">
+                <Context docBase="/home/ehugonnet/dev/silverpeas/services/silverpeas-settings/target/test-classes/data/data/weblib" path="/weblib"/>
+                <Context docBase="/home/ehugonnet/dev/silverpeas/services/silverpeas-settings/target/test-classes/data/data/website" path="/website"/>
+                <Context docBase="/home/ehugonnet/dev/silverpeas/services/silverpeas-settings/target/test-classes/toto/help/fr" path="/help_fr"/>
+            </Host>
+        </Engine>
+    </Service>
+</Server>

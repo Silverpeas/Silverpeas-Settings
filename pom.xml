@@ -4,35 +4,39 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>12</version>
+    <version>14</version>
   </parent>
 
   <scm>
-    <connection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/services/silverpeas-settings/trunk</connection>
-    <developerConnection>scm:svn:https://repository.silverpeas.org/svn/silverpeas/services/silverpeas-settings/trunk</developerConnection>
-    <url>https://repository.silverpeas.org/svn/silverpeas/services/silverpeas-settings/trunk</url>
+    <connection>scm:svn:https://www.silverpeas.org/svn/silverpeas/services/silverpeas-settings/trunk</connection>
+    <developerConnection>scm:svn:https://www.silverpeas.org/svn/silverpeas/services/silverpeas-settings/trunk</developerConnection>
+    <url>https://www.silverpeas.org/svn/silverpeas/services/silverpeas-settings/trunk</url>
   </scm>
-  
+
   <groupId>com.silverpeas.builder</groupId>
   <artifactId>silverpeas-settings</artifactId>
   <packaging>jar</packaging>
   <version>1.5-SNAPSHOT</version>
   <name>SilverpeasSettings</name>
-  
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
+     <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.silverpeas.builder</groupId>
       <artifactId>fileutil</artifactId>
-      <version>1.3</version>
+      <version>1.4</version>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.builder</groupId>
       <artifactId>application-builder</artifactId>
-      <version>1.4</version>
+      <version>1.5</version>
     </dependency>
   </dependencies>
 

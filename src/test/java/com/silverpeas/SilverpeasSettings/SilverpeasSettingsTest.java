@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,13 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.SilverpeasSettings;
 
+import java.util.Collection;
 import com.silverpeas.applicationbuilder.XmlDocument;
 import com.silverpeas.file.GestionVariables;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.jdom.Document;
@@ -41,6 +44,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static com.silverpeas.SilverpeasSettings.SilverpeasSettings.*;
+import static java.io.File.separatorChar;
 
 /**
  *
@@ -48,11 +53,17 @@ import org.junit.Test;
  */
 public class SilverpeasSettingsTest {
 
+  private static final String resourcesDir = System.getProperty("basedir") + separatorChar
+      + "target" + separatorChar + "test-classes" + separatorChar;
+
   public SilverpeasSettingsTest() {
   }
 
   @BeforeClass
   public static void setUpClass() throws Exception {
+    System.setProperty("silverpeas.home", resourcesDir);
+    System.setProperty("SILVERPEAS_HOME", resourcesDir);
+    System.setProperty("JBOSS_HOME", resourcesDir);
   }
 
   @AfterClass
@@ -69,14 +80,14 @@ public class SilverpeasSettingsTest {
 
   /**
    * Test of loadGlobalVariables method, of class SilverpeasSettings.
-   * @throws Exception 
+   * @throws Exception
    */
   @Test
   public void testLoadGlobalVariables() throws Exception {
     SAXBuilder builder = new SAXBuilder();
     Document doc = builder.build(new File(System.getProperty("basedir")
-            + File.separatorChar + "target" + File.separatorChar + "test-classes"
-            + File.separatorChar + "expected" + File.separatorChar + "MergedSettings.xml"));
+        + separatorChar + "target" + separatorChar + "test-classes"
+        + separatorChar + "expected" + separatorChar + "MergedSettings.xml"));
     // Get the root element
     Element root = doc.getRootElement();
     GestionVariables gv = SilverpeasSettings.loadGlobalVariables(root);
@@ -88,33 +99,105 @@ public class SilverpeasSettingsTest {
 
   /**
    * Test of mergeConfigurationFiles method, of class SilverpeasSettings.
-   * @throws Exception 
+   * @throws Exception
    */
   @Test
   public void testMergeConfigurationFiles() throws Exception {
-    File dirXml = new File(System.getProperty("basedir") + File.separatorChar + "target"
-            + File.separatorChar + "test-classes" + File.separatorChar + "xml");
+    File dirXml = new File(resourcesDir + "xml");
     XmlDocument fileXml = new XmlDocument(dirXml, SilverpeasSettings.SILVERPEAS_SETTINGS);
     fileXml.load();
     SilverpeasSettings.mergeConfigurationFiles(fileXml, dirXml);
     fileXml.setOutputEncoding("UTF-8");
     XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
 
-    File tempDir = new File(System.getProperty("basedir") + File.separatorChar + "target"
-            + File.separatorChar + "temp");
+    File tempDir = new File(System.getProperty("basedir") + separatorChar + "target"
+        + separatorChar + "temp");
     tempDir.mkdirs();
     File mergedFile = new File(tempDir, "merge_result.xml");
     OutputStream out = new FileOutputStream(mergedFile);
     output.output(fileXml.getDocument(), out);
     out.close();
+    @SuppressWarnings("unchecked")
     List<String> resultLines = FileUtils.readLines(mergedFile, "UTF-8");
-    List<String> expectedtLines = FileUtils.readLines(new File(System.getProperty("basedir")
-            + File.separatorChar + "target" + File.separatorChar + "test-classes"
-            + File.separatorChar + "expected" + File.separatorChar + "MergedSettings.xml"), "UTF-8");
+    @SuppressWarnings("unchecked")
+    List<String> expectedtLines = FileUtils.readLines(new File(resourcesDir + "expected"
+        + separatorChar + "MergedSettings.xml"), "UTF-8");
     Assert.assertNotNull(resultLines);
     Assert.assertEquals(expectedtLines.size(), resultLines.size());
-    for(int i = 0; i < resultLines.size(); i++) {
+    for (int i = 0; i < resultLines.size(); i++) {
       Assert.assertEquals(expectedtLines.get(i), resultLines.get(i));
     }
+  }
+
+  @Test
+  /**
+   *  <xmlfile name="jbossweb-tomcat55.sar/server.xml">
+
+  <parameter key="/Service[@name='jboss.web']/Engine[@name='jboss.web']/Host[@name='localhost']/Context[@path='/website']" mode="update">
+  <value location="@docBase">${SILVERPEAS_DATA_HOME_DEPENDANT}/data/website</value>
+  <value location="@path">/website</value>
+  </parameter>
+  <parameter key="/Service[@name='jboss.web']/Engine[@name='jboss.web']/Host[@name='localhost']/Context[@path='/help_fr']" mode="update">
+  <value location="@docBase">${SILVERPEAS_HOME_DEPENDANT}/help/fr</value>
+  <value location="@path">/help_fr</value>
+  </parameter>
+  </xmlfile>
+   */
+  public void xmlFileTransformation() throws Exception {
+    GestionVariables gestion = new GestionVariables();
+    gestion.addVariable("JBOSS_LISTEN_PORT", "9500");
+    gestion.addVariable("SILVERPEAS_DATA_HOME_DEPENDANT", resourcesDir + "data");
+    gestion.addVariable("SILVERPEAS_HOME_DEPENDANT", resourcesDir + "toto");
+    String dir = resourcesDir + "transform" + separatorChar;
+    Element element = new Element(XML_FILE_TAG);
+    element.setAttribute(FILE_NAME_ATTRIB, "jbossweb-tomcat55.sar/server.xml");
+    Collection<Element> values = new ArrayList<Element>(2);
+    values.add(getValueElement("@URIEncoding", "UTF-8"));
+    values.add(getValueElement("@port", "${JBOSS_LISTEN_PORT}"));
+    element.addContent(getParameterElement(
+        "//Service[@name='jboss.web']/Connector[@maxThreads='250']",
+        "update", values));
+    values = new ArrayList<Element>(2);
+    values.add(getValueElement("@docBase", "${SILVERPEAS_DATA_HOME_DEPENDANT}/data/weblib"));
+    values.add(getValueElement("@path", "/weblib"));
+    element.addContent(getParameterElement("/Server/Service[@name='jboss.web']/Engine[@name='jboss.web']/"
+        + "Host[@name='localhost']/Context[@path='/weblib']", "update", values));
+    values = new ArrayList<Element>(2);
+    values.add(getValueElement("@docBase", "${SILVERPEAS_DATA_HOME_DEPENDANT}/data/website"));
+    values.add(getValueElement("@path", "/website"));
+    element.addContent(getParameterElement("//Service[@name='jboss.web']/Engine[@name='jboss.web']"
+        + "/Host[@name='localhost']/Context[@path='/website']", "update", values));
+    values = new ArrayList<Element>(2);
+    values.add(getValueElement("@docBase", "${SILVERPEAS_HOME_DEPENDANT}/help/fr"));
+    values.add(getValueElement("@path", "/help_fr"));
+    element.addContent(getParameterElement("/Server/Service[@name='jboss.web']/Engine[@name='jboss.web']/"
+        + "Host[@name='localhost']/Context[@path='/help_fr']", "update", values));
+    xmlfile(dir, element, gestion);
+    @SuppressWarnings("unchecked")
+    List<String> resultLines = FileUtils.readLines(new File(resourcesDir + "transform"
+        + separatorChar + "jbossweb-tomcat55.sar" + separatorChar + "server.xml"), "UTF-8");
+    @SuppressWarnings("unchecked")
+    List<String> expectedtLines = FileUtils.readLines(new File(resourcesDir + "expected_transform"
+        + separatorChar + "server.xml"), "UTF-8");
+    Assert.assertNotNull(resultLines);
+    Assert.assertEquals(expectedtLines.size(), resultLines.size());
+    for (int i = 0; i < resultLines.size(); i++) {
+      Assert.assertEquals(expectedtLines.get(i), resultLines.get(i));
+    }
+  }
+
+  protected Element getValueElement(String location, String value) {
+    Element element = new Element(VALUE_TAG);
+    element.setAttribute(VALUE_LOCATION_ATTRIB, location);
+    element.setText(value);
+    return element;
+  }
+
+  protected Element getParameterElement(String key, String mode, Collection<Element> values) {
+    Element element = new Element(PARAMETER_TAG);
+    element.setAttribute(PARAMETER_KEY_ATTRIB, key);
+    element.setAttribute(XPATH_MODE_ATTRIB, mode);
+    element.setContent(values);
+    return element;
   }
 }
