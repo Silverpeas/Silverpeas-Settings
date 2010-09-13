@@ -139,6 +139,9 @@ public class XPathTransformer implements XmlTransformer {
               if (oldNode == null) {
                 createNewNode(doc, rootXpathNode, value);
               } else {
+                if (rootXpathNode.equals(oldNode)) {
+                  rootXpathNode = rootXpathNode.getParentNode();
+                }
                 Node newNode = oldNode.cloneNode(true);
                 if (oldNode instanceof Element) {
                   ((Element) newNode).setTextContent(value.getValue());

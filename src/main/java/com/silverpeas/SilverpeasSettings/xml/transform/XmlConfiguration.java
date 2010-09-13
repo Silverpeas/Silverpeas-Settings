@@ -24,6 +24,7 @@
 
 package com.silverpeas.SilverpeasSettings.xml.transform;
 
+import com.silverpeas.xml.XmlTreeHandler;
 import java.util.ArrayList;
 import org.jdom.Element;
 import com.silverpeas.file.GestionVariables;
@@ -52,15 +53,21 @@ public class XmlConfiguration {
       if (eltParameter.getChildren() != null && !eltParameter.getChildren().isEmpty()) {
         @SuppressWarnings("unchecked")
         List<Element> eltValues = eltParameter.getChildren(VALUE_TAG);
+        if (eltValues == null || eltValues.isEmpty()) {
+          parameter.addValue(new Value(null, null, gv.resolveAndEvalString(
+              eltParameter.getTextTrim()), parameter.getMode()));
+        }
         for (Element eltValue : eltValues) {
           String relativePath = eltValue.getAttributeValue(RELATIVE_VALUE_ATTRIB);
           if (relativePath != null && !"".equals(relativePath)) {
             relativePath = gv.resolveAndEvalString(relativePath);
           }
-          parameter.addValue(new Value(gv.resolveAndEvalString(eltValue.getAttributeValue(
-              VALUE_LOCATION_ATTRIB)), relativePath, gv
-              .resolveAndEvalString(eltValue.getTextTrim()),
-              getXmlMode(eltValue.getAttributeValue(XPATH_MODE_ATTRIB))));
+          String location = eltValue.getAttributeValue(VALUE_LOCATION_ATTRIB);
+          if (location != null && !"".equals(location)) {
+            location = gv.resolveAndEvalString(location);
+          }
+          parameter.addValue(new Value(location, relativePath, gv.resolveAndEvalString(
+              eltValue.getTextTrim()), getXmlMode(eltValue.getAttributeValue(XPATH_MODE_ATTRIB))));
         }
       }
       parameters.add(parameter);

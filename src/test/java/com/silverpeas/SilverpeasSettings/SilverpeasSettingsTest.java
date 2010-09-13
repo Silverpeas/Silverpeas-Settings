@@ -85,9 +85,7 @@ public class SilverpeasSettingsTest {
   @Test
   public void testLoadGlobalVariables() throws Exception {
     SAXBuilder builder = new SAXBuilder();
-    Document doc = builder.build(new File(System.getProperty("basedir")
-        + separatorChar + "target" + separatorChar + "test-classes"
-        + separatorChar + "expected" + separatorChar + "MergedSettings.xml"));
+    Document doc = builder.build(new File(resourcesDir + "expected" + separatorChar + "MergedSettings.xml"));
     // Get the root element
     Element root = doc.getRootElement();
     GestionVariables gv = SilverpeasSettings.loadGlobalVariables(root);
@@ -130,19 +128,6 @@ public class SilverpeasSettingsTest {
   }
 
   @Test
-  /**
-   *  <xmlfile name="jbossweb-tomcat55.sar/server.xml">
-
-  <parameter key="/Service[@name='jboss.web']/Engine[@name='jboss.web']/Host[@name='localhost']/Context[@path='/website']" mode="update">
-  <value location="@docBase">${SILVERPEAS_DATA_HOME_DEPENDANT}/data/website</value>
-  <value location="@path">/website</value>
-  </parameter>
-  <parameter key="/Service[@name='jboss.web']/Engine[@name='jboss.web']/Host[@name='localhost']/Context[@path='/help_fr']" mode="update">
-  <value location="@docBase">${SILVERPEAS_HOME_DEPENDANT}/help/fr</value>
-  <value location="@path">/help_fr</value>
-  </parameter>
-  </xmlfile>
-   */
   public void xmlFileTransformation() throws Exception {
     GestionVariables gestion = new GestionVariables();
     gestion.addVariable("JBOSS_LISTEN_PORT", "9500");
