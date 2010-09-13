@@ -140,9 +140,9 @@ public class XPathTransformer implements XmlTransformer {
                 createNewNode(doc, rootXpathNode, value);
               } else {
                 Node newNode = oldNode.cloneNode(true);
-                if (newNode instanceof Element) {
-                  ((Element) newNode).setNodeValue(value.getValue());
-                  rootXpathNode.replaceChild(oldNode, newNode);
+                if (oldNode instanceof Element) {
+                  ((Element) newNode).setTextContent(value.getValue());
+                  rootXpathNode.replaceChild(newNode, oldNode);
                 } else {
                   ((Attr) newNode).setValue(value.getValue());
                   rootXpathNode.getAttributes().setNamedItem(newNode);
