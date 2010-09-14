@@ -104,6 +104,8 @@ public class XPathTransformer implements XmlTransformer {
     try {
       Transformer transformer = TransformerFactory.newInstance().newTransformer();
       transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+      transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+      transformer.setOutputProperty(OutputKeys.VERSION, "1.0");
       StreamResult result = new StreamResult(new File(xmlFile));
       DOMSource source = new DOMSource(doc);
       transformer.transform(source, result);
