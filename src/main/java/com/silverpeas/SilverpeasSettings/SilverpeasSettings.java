@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -59,7 +58,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import org.apache.commons.io.FileUtils;
-import org.jdom.output.XMLOutputter;
 
 public class SilverpeasSettings {
 

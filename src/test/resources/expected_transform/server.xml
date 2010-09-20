@@ -41,9 +41,9 @@
         <Connector address="${jboss.bind.address}" emptySessionPath="true" enableLookups="false" port="8009" protocol="AJP/1.3" redirectPort="8443"/>
         <Engine defaultHost="localhost" name="jboss.web">
             <Host autoDeploy="false" deployOnStartup="false" deployXML="false" name="localhost">
-                <Context docBase="/home/ehugonnet/dev/silverpeas/services/silverpeas-settings/target/test-classes/data/data/weblib" path="/weblib"/>
-                <Context docBase="/home/ehugonnet/dev/silverpeas/services/silverpeas-settings/target/test-classes/data/data/website" path="/website"/>
-                <Context docBase="/home/ehugonnet/dev/silverpeas/services/silverpeas-settings/target/test-classes/toto/help/fr" path="/help_fr"/>
+                <Context docBase="${basedir}/target/test-classes/data/data/weblib" path="/weblib"/>
+                <Context docBase="${basedir}/target/test-classes/data/data/website" path="/website"/>
+                <Context docBase="${basedir}/target/test-classes/toto/help/fr" path="/help_fr"/>
             </Host>
         </Engine>
     </Service>
