@@ -119,12 +119,9 @@ public class SilverpeasSettings {
   public static String getRelativePath(final String base, final String path) {
     String result = path;
     String relBase = base;
-    String resultBase = null;
+
     boolean baseUnixSep;
     int nbLevel;
-
-    // BASE (../.. etc)
-
     // removes drive
     if (relBase != null && relBase.length() >= 2 && relBase.charAt(1) == ':') {
       relBase = relBase.substring(2);
@@ -148,7 +145,7 @@ public class SilverpeasSettings {
       StringTokenizer st = new StringTokenizer(relBase, baseUnixSep ? "/" : "\\");
       nbLevel = st.countTokens();
     }
-    // creates the base (../.. etc)
+    String resultBase = null;
     for (int i = 0; i < nbLevel; i++) {
       if (i == 0) {
         resultBase = "..";

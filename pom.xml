@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>14</version>
+    <version>16</version>
   </parent>
 
   <scm>
@@ -12,6 +12,21 @@
     <developerConnection>scm:svn:https://www.silverpeas.org/svn/silverpeas/services/silverpeas-settings/trunk</developerConnection>
     <url>https://www.silverpeas.org/svn/silverpeas/services/silverpeas-settings/trunk</url>
   </scm>
+  
+  <repositories>
+    <repository>
+      <id>NexusSilverpeas</id>
+      <layout>default</layout>
+      <name>Silverpeas Repository</name>
+      <url>http://www.silverpeas.org/nexus/content/groups/silverpeas</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <groupId>com.silverpeas.builder</groupId>
   <artifactId>silverpeas-settings</artifactId>
@@ -31,7 +46,7 @@
     <dependency>
       <groupId>com.silverpeas.builder</groupId>
       <artifactId>fileutil</artifactId>
-      <version>1.4</version>
+      <version>1.5</version>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.builder</groupId>

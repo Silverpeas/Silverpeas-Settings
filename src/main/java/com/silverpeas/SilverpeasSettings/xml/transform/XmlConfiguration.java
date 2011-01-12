@@ -24,7 +24,6 @@
 
 package com.silverpeas.SilverpeasSettings.xml.transform;
 
-import com.silverpeas.xml.XmlTreeHandler;
 import java.util.ArrayList;
 import org.jdom.Element;
 import com.silverpeas.file.GestionVariables;
@@ -69,6 +68,9 @@ public class XmlConfiguration {
           parameter.addValue(new Value(location, relativePath, gv.resolveAndEvalString(
               eltValue.getTextTrim()), getXmlMode(eltValue.getAttributeValue(XPATH_MODE_ATTRIB))));
         }
+      } else {
+        parameter.addValue(new Value(null, null, gv.resolveAndEvalString(
+            eltParameter.getTextTrim()), parameter.getMode()));
       }
       parameters.add(parameter);
     }
