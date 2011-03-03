@@ -4,13 +4,13 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>16</version>
+    <version>19-SNAPSHOT</version>
   </parent>
 
   <scm>
-    <connection>scm:svn:https://www.silverpeas.org/svn/silverpeas/services/silverpeas-settings/trunk</connection>
-    <developerConnection>scm:svn:https://www.silverpeas.org/svn/silverpeas/services/silverpeas-settings/trunk</developerConnection>
-    <url>https://www.silverpeas.org/svn/silverpeas/services/silverpeas-settings/trunk</url>
+    <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Settings.git</connection>
+    <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Settings.git</developerConnection>
+    <url>https://github.com/Silverpeas/Silverpeas-Settings</url>
   </scm>
   
   <repositories>
