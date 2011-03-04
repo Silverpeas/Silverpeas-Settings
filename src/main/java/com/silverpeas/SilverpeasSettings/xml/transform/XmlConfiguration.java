@@ -66,7 +66,7 @@ public class XmlConfiguration {
             location = gv.resolveAndEvalString(location);
           }
           parameter.addValue(new Value(location, relativePath, gv.resolveAndEvalString(
-              eltValue.getTextTrim()), getXmlMode(eltValue.getAttributeValue(XPATH_MODE_ATTRIB))));
+              eltValue.getTextTrim()), parameter.getMode()));
         }
       } else {
         parameter.addValue(new Value(null, null, gv.resolveAndEvalString(

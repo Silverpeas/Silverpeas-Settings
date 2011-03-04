@@ -191,13 +191,14 @@ public class XPathTransformer implements XmlTransformer {
    */
   public void createNewNode(Document doc, Node target, Value value) {
     if (value.getLocation().startsWith("@")) {
-      Attr result = doc.createAttribute(value.getLocation().substring(1));
-      result.setValue(value.getValue());
-      target.getAttributes().setNamedItem(result);
+      Attr newAttribute = doc.createAttribute(value.getLocation().substring(1));
+      newAttribute.setValue(value.getValue());
+      target.getAttributes().setNamedItem(newAttribute);
     } else {
-      Element result = doc.createElement(value.getLocation());
-      result.setNodeValue(value.getValue());
-      target.appendChild(result);
+      Element newElement = doc.createElement(value.getLocation());
+      // result.setNodeValue(value.getValue());
+      newElement.setTextContent(value.getValue());
+      target.appendChild(newElement);
     }
   }
 }
