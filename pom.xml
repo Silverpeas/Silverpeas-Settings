@@ -12,7 +12,7 @@
     <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Settings.git</developerConnection>
     <url>https://github.com/Silverpeas/Silverpeas-Settings</url>
   </scm>
-  
+
   <repositories>
     <repository>
       <id>NexusSilverpeas</id>
@@ -32,7 +32,7 @@
   <artifactId>silverpeas-settings</artifactId>
   <packaging>jar</packaging>
   <version>1.9-SNAPSHOT</version>
-  <name>SilverpeasSettings</name>
+  <name>Silverpeas settings tool</name>
 
   <dependencies>
     <dependency>
