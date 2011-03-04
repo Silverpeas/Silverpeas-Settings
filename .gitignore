@@ -1,0 +1,6 @@
+*.iws
+*.ipr
+*.iml
+target
+.sonar-ide.properties
+nbactions.xml
