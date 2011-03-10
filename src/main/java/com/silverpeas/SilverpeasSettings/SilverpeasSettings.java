@@ -77,6 +77,7 @@ public class SilverpeasSettings {
   public static final String TEXT_FILE_TAG = "textfile";
   public static final String COPY_FILE_TAG = "copyfile";
   public static final String COPY_DIR_TAG = "copydir";
+  public static final String DELETE_TAG = "delete";
   public static final String XML_FILE_TAG = "xmlfile";
   public static final String PARAMETER_TAG = "parameter";
   public static final String VALUE_TAG = "value";
@@ -219,6 +220,8 @@ public class SilverpeasSettings {
               copyfile(dir, action, gv);
             } else if (action.getName().equals(XML_FILE_TAG)) {
               xmlfile(dir, action, gv);
+            } else if (action.getName().equals(DELETE_TAG)) {
+              deletefile(dir, action, gv);
             } else {
               displayMessageln("Unknown setting action : " + action.getName());
             }
@@ -450,6 +453,18 @@ public class SilverpeasSettings {
           displayMessageln("Ignore " + f.getName() + " file because dependencies are not resolved.");
         }
       }
+    }
+  }
+
+  protected static void deletefile(String dir, Element eltTextFile, GestionVariables gv)
+      throws Exception {
+    String dirFile = dir + eltTextFile.getAttributeValue(FILE_NAME_ATTRIB);
+    dirFile = gv.resolveAndEvalString(dirFile);
+    File sourceFile = new File(dirFile);
+    if (FileUtils.deleteQuietly(sourceFile)) {
+      displayMessageln(dirFile + System.getProperty("line.separator") + "\tdeleted");
+    } else {
+      displayMessageln(dirFile + System.getProperty("line.separator") + "\tdeletion failed!");
     }
   }
 }
