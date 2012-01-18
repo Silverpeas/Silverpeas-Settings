@@ -1,63 +1,59 @@
 /**
  * Copyright (C) 2000 - 2009 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.SilverpeasSettings;
 
 import com.silverpeas.SilverpeasSettings.xml.XmlTransformer;
 import com.silverpeas.SilverpeasSettings.xml.transform.XPathTransformer;
 import com.silverpeas.applicationbuilder.AppBuilderException;
+import com.silverpeas.applicationbuilder.XmlDocument;
+import com.silverpeas.file.BackupFile;
+import com.silverpeas.file.FileUtil;
+import com.silverpeas.file.GestionVariables;
+import com.silverpeas.file.ModifFile;
+import com.silverpeas.file.ModifProperties;
+import com.silverpeas.file.ModifText;
+import com.silverpeas.file.ModifTextSilverpeas;
+import com.silverpeas.file.ModifXMLSilverpeas;
+import com.silverpeas.file.RegexpElementMotif;
+import com.silverpeas.installedtree.DirectoryLocator;
+import com.silverpeas.xml.XmlTreeHandler;
+import com.silverpeas.xml.xpath.XPath;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.jdom.Document;
 import org.jdom.Element;
-
-import com.silverpeas.file.BackupFile;
-import com.silverpeas.file.FileUtil;
-import com.silverpeas.file.GestionVariables;
-import com.silverpeas.file.ModifProperties;
-import com.silverpeas.file.ModifText;
-import com.silverpeas.file.ModifTextSilverpeas;
-import com.silverpeas.file.ModifXMLSilverpeas;
-import com.silverpeas.applicationbuilder.XmlDocument;
-import com.silverpeas.file.ModifFile;
-import com.silverpeas.file.RegexpElementMotif;
-import com.silverpeas.installedtree.DirectoryLocator;
-import com.silverpeas.xml.XmlTreeHandler;
-import com.silverpeas.xml.xpath.XPath;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import org.apache.commons.io.FileUtils;
 
 public class SilverpeasSettings {
 
@@ -67,8 +63,8 @@ public class SilverpeasSettings {
   private static final String[] TAGS_TO_MERGE = { "global-vars", "fileset" };
   private static List<File> xmlFiles;
   private static final String TOOL_VERSION = "SilverpeasSettings V5.0";
-  public static final String DIR_SETTINGS = DirectoryLocator.getSilverpeasHome()
-      + "/setup/settings";
+  public static final String DIR_SETTINGS = DirectoryLocator.getSilverpeasHome() +
+      "/setup/settings";
   public static final String SILVERPEAS_SETTINGS = "SilverpeasSettings.xml";
   public static final String SILVERPEAS_CONFIG = "config.xml";
   public static final String DEPENDENCIES_TAG = "dependencies";
@@ -130,13 +126,13 @@ public class SilverpeasSettings {
     // detects file separator
     baseUnixSep = (relBase != null && relBase.indexOf('/') != -1);
     // removes starting file separator
-    if (relBase != null && relBase.length() >= 1
-        && relBase.charAt(0) == (baseUnixSep ? '/' : '\\')) {
+    if (relBase != null && relBase.length() >= 1 &&
+        relBase.charAt(0) == (baseUnixSep ? '/' : '\\')) {
       relBase = relBase.substring(1);
     }
     // removes ending file separator
-    if (relBase != null && relBase.length() >= 1
-        && relBase.endsWith(baseUnixSep ? "/" : "\\")) {
+    if (relBase != null && relBase.length() >= 1 &&
+        relBase.endsWith(baseUnixSep ? "/" : "\\")) {
       relBase = relBase.substring(0, relBase.length() - 2);
     }
     // detects number of levels
@@ -161,8 +157,8 @@ public class SilverpeasSettings {
     // detects file separator
     baseUnixSep = (result != null && result.indexOf('/') != -1);
     // adds starting file separator
-    if (result != null && result.length() >= 1
-        && result.charAt(0) != (baseUnixSep ? '/' : '\\')) {
+    if (result != null && result.length() >= 1 &&
+        result.charAt(0) != (baseUnixSep ? '/' : '\\')) {
       result = (baseUnixSep ? "/" : "\\") + result;
     }
     result = resultBase + result;
@@ -178,10 +174,10 @@ public class SilverpeasSettings {
       System.out.println("start settings of " + TOOL_VERSION + " (" + new Date() + ").");
       File fileLog = new File(DirectoryLocator.getLogHome() + "/SilverpeasSettings.log");
       bufLog = new PrintWriter(new BufferedWriter(new FileWriter(fileLog.getAbsolutePath(), true)));
-      displayMessageln(NEW_LINE
-          + "************************************************************************");
-      displayMessageln("start settings of Silverpeas (" + new java.util.Date()
-          + ").");
+      displayMessageln(NEW_LINE +
+          "************************************************************************");
+      displayMessageln("start settings of Silverpeas (" + new java.util.Date() +
+          ").");
       if (args.length != 0) {
         throw new Exception("parameters forbidden");
       }
@@ -226,17 +222,17 @@ public class SilverpeasSettings {
               displayMessageln("Unknown setting action : " + action.getName());
             }
           } catch (Exception e) {
-            printError(e.toString());
+            printError(e);
           }
         } // while actions
       } // while fileset
-      displayMessageln(NEW_LINE + "Silverpeas has been successfuly configured (" + new Date()
-          + ").");
+      displayMessageln(NEW_LINE + "Silverpeas has been successfuly configured (" + new Date() +
+          ").");
       bufLog.close();
-      System.out.println(NEW_LINE + "Silverpeas has been successfuly configured (" + new Date()
-          + ").");
+      System.out.println(NEW_LINE + "Silverpeas has been successfuly configured (" + new Date() +
+          ").");
     } catch (Exception e) {
-      printError(e.toString());
+      printError(e);
       e.printStackTrace(System.err);
     }
   }
@@ -354,6 +350,20 @@ public class SilverpeasSettings {
     displayMessageln(dirFile + System.getProperty("line.separator") + "\tcopied to " + destFile);
   }
 
+  public static void printError(Exception ex) {
+    StringWriter buffer = new StringWriter(2000);
+    try {
+      if (bufLog != null) {
+        ex.printStackTrace(new PrintWriter(buffer));
+        displayMessageln(NEW_LINE + buffer.toString());
+        bufLog.close();
+      }
+      System.out.println(NEW_LINE + buffer.toString() + NEW_LINE);
+    } finally {
+      IOUtils.closeQuietly(buffer);
+    }
+  }
+
   public static void printError(String errMsg) {
     if (bufLog != null) {
       displayMessageln(NEW_LINE + errMsg);
@@ -437,8 +447,8 @@ public class SilverpeasSettings {
       displayMessageln(xmlFile.toString());
     }
     for (File f : xmlFiles) {
-      displayMessageln("Is File = " + f.isFile() + " - Extension: " + FileUtil.getExtension(f)
-          + " - Nom =" + f.getName());
+      displayMessageln("Is File = " + f.isFile() + " - Extension: " + FileUtil.getExtension(f) +
+          " - Nom =" + f.getName());
       if (!(SILVERPEAS_SETTINGS.equalsIgnoreCase(f.getName()) || SILVERPEAS_CONFIG
           .equalsIgnoreCase(f.
           getName()))) {
