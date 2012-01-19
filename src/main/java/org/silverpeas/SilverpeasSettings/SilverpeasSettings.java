@@ -18,24 +18,26 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.SilverpeasSettings;
+package org.silverpeas.SilverpeasSettings;
 
-import com.silverpeas.SilverpeasSettings.xml.XmlTransformer;
-import com.silverpeas.SilverpeasSettings.xml.transform.XPathTransformer;
+import org.silverpeas.SilverpeasSettings.xml.XmlTransformer;
+import org.silverpeas.SilverpeasSettings.xml.transform.XPathTransformer;
 import com.silverpeas.applicationbuilder.AppBuilderException;
 import com.silverpeas.applicationbuilder.XmlDocument;
-import com.silverpeas.file.BackupFile;
-import com.silverpeas.file.FileUtil;
-import com.silverpeas.file.GestionVariables;
-import com.silverpeas.file.ModifFile;
-import com.silverpeas.file.ModifProperties;
-import com.silverpeas.file.ModifText;
-import com.silverpeas.file.ModifTextSilverpeas;
-import com.silverpeas.file.ModifXMLSilverpeas;
-import com.silverpeas.file.RegexpElementMotif;
+import org.silverpeas.file.BackupFile;
+import org.silverpeas.file.FileUtil;
+import org.silverpeas.file.GestionVariables;
+import org.silverpeas.file.ModifFile;
+import org.silverpeas.file.ModifProperties;
+import org.silverpeas.file.ModifText;
+import org.silverpeas.file.ModifTextSilverpeas;
+import org.silverpeas.file.ModifXMLSilverpeas;
+import org.silverpeas.file.RegexpElementMotif;
 import com.silverpeas.installedtree.DirectoryLocator;
 import com.silverpeas.xml.XmlTreeHandler;
 import com.silverpeas.xml.xpath.XPath;
+import groovy.lang.Binding;
+import groovy.util.GroovyScriptEngine;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -46,10 +48,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.jdom.Document;
@@ -60,7 +65,7 @@ public class SilverpeasSettings {
   static final String NEW_LINE = System.getProperty("line.separator");
   private static PrintWriter bufLog = null;
   private static XPath _xpathEngine = null;
-  private static final String[] TAGS_TO_MERGE = { "global-vars", "fileset" };
+  private static final String[] TAGS_TO_MERGE = { "global-vars", "fileset", "script" };
   private static List<File> xmlFiles;
   private static final String TOOL_VERSION = "SilverpeasSettings V5.0";
   public static final String DIR_SETTINGS = DirectoryLocator.getSilverpeasHome() +
@@ -77,6 +82,7 @@ public class SilverpeasSettings {
   public static final String XML_FILE_TAG = "xmlfile";
   public static final String PARAMETER_TAG = "parameter";
   public static final String VALUE_TAG = "value";
+  private static final String SCRIPT_TAG = "script";
   public static final String FILE_NAME_ATTRIB = "name";
   public static final String XPATH_MODE_ATTRIB = "mode";
   public static final String PARAMETER_KEY_ATTRIB = "key";
@@ -84,7 +90,18 @@ public class SilverpeasSettings {
   public static final String RELATIVE_VALUE_ATTRIB = "relative-to";
   static final Map<String, Character> _modeMap = new HashMap<String, Character>(5);
 
+  static final String[] scriptsRootPath =
+      new String[] { DirectoryLocator.getSilverpeasHome() + "/bin/scripts/" };
+
+  static GroovyScriptEngine scriptEngine = null;
+
   static {
+    try {
+      scriptEngine = new GroovyScriptEngine(scriptsRootPath);
+    } catch (IOException ex) {
+      Logger.getLogger(SilverpeasSettings.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
     _modeMap.put("select", Character.valueOf(XmlTreeHandler.MODE_SELECT));
     _modeMap.put("insert", Character.valueOf(XmlTreeHandler.MODE_INSERT));
     _modeMap.put("update", Character.valueOf(XmlTreeHandler.MODE_UPDATE));
@@ -200,7 +217,11 @@ public class SilverpeasSettings {
       GestionVariables gv = loadGlobalVariables(root);
       // liste des chemins des fichiers
       displayMessageln(NEW_LINE + "modified files :");
-      @SuppressWarnings("unchecked")
+      // @SuppressWarnings("unchecked")
+      List<Element> scripts = root.getChildren("script");
+      for (Element aScript : scripts) {
+        executeScript(null, aScript, gv);
+      }
       List<Element> listeFileSet = root.getChildren("fileset");
       for (Element eltFileSet : listeFileSet) {
         String dir = eltFileSet.getAttributeValue("root");
@@ -218,6 +239,8 @@ public class SilverpeasSettings {
               xmlfile(dir, action, gv);
             } else if (action.getName().equals(DELETE_TAG)) {
               deletefile(dir, action, gv);
+            } else if (action.getName().equals(SCRIPT_TAG)) {
+              executeScript(dir, action, gv);
             } else {
               displayMessageln("Unknown setting action : " + action.getName());
             }
@@ -450,8 +473,7 @@ public class SilverpeasSettings {
       displayMessageln("Is File = " + f.isFile() + " - Extension: " + FileUtil.getExtension(f) +
           " - Nom =" + f.getName());
       if (!(SILVERPEAS_SETTINGS.equalsIgnoreCase(f.getName()) || SILVERPEAS_CONFIG
-          .equalsIgnoreCase(f.
-          getName()))) {
+          .equalsIgnoreCase(f.getName()))) {
         displayMessageln(f.getName());
         XmlDocument fXml = new XmlDocument(dirXml, f.getName());
         fXml.load();
@@ -476,5 +498,29 @@ public class SilverpeasSettings {
     } else {
       displayMessageln(dirFile + System.getProperty("line.separator") + "\tdeletion failed!");
     }
+  }
+
+  protected static void executeScript(String dir, Element scriptElt, GestionVariables gv) throws
+      Exception {
+    String script = scriptElt.getAttributeValue(FILE_NAME_ATTRIB);
+    if (scriptEngine != null) {
+      Binding withVariables = bindToVariables(gv);
+      if (dir != null && !dir.trim().isEmpty()) {
+        withVariables.setVariable("filesetRoot", dir);
+      }
+      scriptEngine.run(script, withVariables);
+    } else {
+      displayMessageln("The Groovy Script Engine is not set: cannot run script '" + script);
+    }
+  }
+
+  private static Binding bindToVariables(GestionVariables gv) throws Exception {
+    Binding binding = new Binding();
+    Enumeration<String> variables = gv.getVariableNames();
+    while (variables.hasMoreElements()) {
+      String variable = variables.nextElement();
+      binding.setVariable(variable, gv.getValue(variable));
+    }
+    return binding;
   }
 }

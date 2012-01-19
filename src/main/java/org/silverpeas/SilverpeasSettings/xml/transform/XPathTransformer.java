@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.SilverpeasSettings.xml.transform;
+package org.silverpeas.SilverpeasSettings.xml.transform;
 
 import java.util.List;
 import javax.xml.transform.TransformerException;
@@ -41,8 +41,8 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import org.apache.commons.io.IOUtils;
-import static com.silverpeas.SilverpeasSettings.SilverpeasSettings.*;
-import com.silverpeas.SilverpeasSettings.xml.XmlTransformer;
+import static org.silverpeas.SilverpeasSettings.SilverpeasSettings.*;
+import org.silverpeas.SilverpeasSettings.xml.XmlTransformer;
 import com.silverpeas.xml.XmlTreeHandler;
 import java.io.File;
 import javax.xml.transform.OutputKeys;
@@ -54,7 +54,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
-import com.silverpeas.file.GestionVariables;
+import org.silverpeas.file.GestionVariables;
 
 /**
  * This is the original transformer used by SilverpeasSettings since the 5.3 release of Silverpeas.

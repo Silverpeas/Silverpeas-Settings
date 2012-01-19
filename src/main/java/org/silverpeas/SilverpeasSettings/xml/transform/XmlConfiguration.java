@@ -22,15 +22,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.SilverpeasSettings.xml.transform;
+package org.silverpeas.SilverpeasSettings.xml.transform;
 
 import java.util.ArrayList;
 import org.jdom.Element;
-import com.silverpeas.file.GestionVariables;
+import org.silverpeas.file.GestionVariables;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import static com.silverpeas.SilverpeasSettings.SilverpeasSettings.*;
+import static org.silverpeas.SilverpeasSettings.SilverpeasSettings.*;
 
 /**
  * @author ehugonnet

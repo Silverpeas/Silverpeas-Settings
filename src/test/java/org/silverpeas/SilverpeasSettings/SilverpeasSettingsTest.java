@@ -22,11 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.SilverpeasSettings;
+package org.silverpeas.SilverpeasSettings;
 
 import java.util.Collection;
 import com.silverpeas.applicationbuilder.XmlDocument;
-import com.silverpeas.file.GestionVariables;
+import org.silverpeas.file.GestionVariables;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -44,7 +44,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static com.silverpeas.SilverpeasSettings.SilverpeasSettings.*;
+import static org.silverpeas.SilverpeasSettings.SilverpeasSettings.*;
 import static java.io.File.separatorChar;
 
 /**
