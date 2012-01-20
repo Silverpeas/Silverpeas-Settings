@@ -24,14 +24,15 @@
 
 package org.silverpeas.SilverpeasSettings.xml.origin;
 
-import org.silverpeas.SilverpeasSettings.xml.XmlTransformer;
-import com.silverpeas.applicationbuilder.XmlDocument;
-import org.silverpeas.file.BackupFile;
-import org.silverpeas.file.GestionVariables;
-import com.silverpeas.xml.XmlTreeHandler;
 import java.io.File;
 import java.util.List;
 import org.jdom.Element;
+import org.silverpeas.SilverpeasSettings.xml.XmlTransformer;
+import org.silverpeas.applicationbuilder.XmlDocument;
+import org.silverpeas.file.BackupFile;
+import org.silverpeas.file.GestionVariables;
+import org.silverpeas.xml.XmlTreeHandler;
+
 import static org.silverpeas.SilverpeasSettings.SilverpeasSettings.*;
 
 /**

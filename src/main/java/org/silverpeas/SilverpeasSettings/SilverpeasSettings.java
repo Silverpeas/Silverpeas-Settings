@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -20,26 +20,11 @@
  */
 package org.silverpeas.SilverpeasSettings;
 
-import org.silverpeas.SilverpeasSettings.xml.XmlTransformer;
-import org.silverpeas.SilverpeasSettings.xml.transform.XPathTransformer;
-import com.silverpeas.applicationbuilder.AppBuilderException;
-import com.silverpeas.applicationbuilder.XmlDocument;
-import org.silverpeas.file.BackupFile;
-import org.silverpeas.file.FileUtil;
-import org.silverpeas.file.GestionVariables;
-import org.silverpeas.file.ModifFile;
-import org.silverpeas.file.ModifProperties;
-import org.silverpeas.file.ModifText;
-import org.silverpeas.file.ModifTextSilverpeas;
-import org.silverpeas.file.ModifXMLSilverpeas;
-import org.silverpeas.file.RegexpElementMotif;
-import com.silverpeas.installedtree.DirectoryLocator;
-import com.silverpeas.xml.XmlTreeHandler;
-import com.silverpeas.xml.xpath.XPath;
 import groovy.lang.Binding;
 import groovy.util.GroovyScriptEngine;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -52,6 +37,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,6 +45,22 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.silverpeas.SilverpeasSettings.xml.XmlTransformer;
+import org.silverpeas.SilverpeasSettings.xml.transform.XPathTransformer;
+import org.silverpeas.applicationbuilder.AppBuilderException;
+import org.silverpeas.applicationbuilder.XmlDocument;
+import org.silverpeas.file.BackupFile;
+import org.silverpeas.file.FileUtil;
+import org.silverpeas.file.GestionVariables;
+import org.silverpeas.file.ModifFile;
+import org.silverpeas.file.ModifProperties;
+import org.silverpeas.file.ModifText;
+import org.silverpeas.file.ModifTextSilverpeas;
+import org.silverpeas.file.ModifXMLSilverpeas;
+import org.silverpeas.file.RegexpElementMotif;
+import org.silverpeas.installedtree.DirectoryLocator;
+import org.silverpeas.xml.XmlTreeHandler;
+import org.silverpeas.xml.xpath.XPath;
 
 public class SilverpeasSettings {
 
@@ -89,10 +91,8 @@ public class SilverpeasSettings {
   public static final String VALUE_LOCATION_ATTRIB = "location";
   public static final String RELATIVE_VALUE_ATTRIB = "relative-to";
   static final Map<String, Character> _modeMap = new HashMap<String, Character>(5);
-
   static final String[] scriptsRootPath =
       new String[] { DirectoryLocator.getSilverpeasHome() + "/bin/scripts/" };
-
   static GroovyScriptEngine scriptEngine = null;
 
   static {
@@ -199,25 +199,18 @@ public class SilverpeasSettings {
         throw new Exception("parameters forbidden");
       }
       File dirXml = new File(DIR_SETTINGS);
-      XmlDocument fileXml = new XmlDocument(dirXml, SILVERPEAS_CONFIG);
+      XmlDocument fileXml = new XmlDocument(dirXml, SILVERPEAS_SETTINGS);
       fileXml.load();
-      displayMessageln(SILVERPEAS_CONFIG + " loaded ");
-
-      XmlDocument fXml = new XmlDocument(dirXml, SILVERPEAS_SETTINGS);
-      fXml.load();
-      fileXml.mergeWith(TAGS_TO_MERGE, fXml);
-
       // merge tous les fichiers de configurations
       displayMessageln(NEW_LINE + "merged files with " + SILVERPEAS_SETTINGS + " :");
-
       mergeConfigurationFiles(fileXml, dirXml);
       Document doc = fileXml.getDocument();
       // Get the root element
       Element root = doc.getRootElement();
-      GestionVariables gv = loadGlobalVariables(root);
+      GestionVariables gv = loadGlobalVariables(dirXml, root);
+
       // liste des chemins des fichiers
       displayMessageln(NEW_LINE + "modified files :");
-      // @SuppressWarnings("unchecked")
       List<Element> scripts = root.getChildren("script");
       for (Element aScript : scripts) {
         executeScript(null, aScript, gv);
@@ -225,21 +218,20 @@ public class SilverpeasSettings {
       List<Element> listeFileSet = root.getChildren("fileset");
       for (Element eltFileSet : listeFileSet) {
         String dir = eltFileSet.getAttributeValue("root");
-        @SuppressWarnings("unchecked")
         List<Element> listeActions = eltFileSet.getChildren();
         for (Element action : listeActions) {
           try {
-            if (action.getName().equals(CONFIG_FILE_TAG)) {
+            if (CONFIG_FILE_TAG.equals(action.getName())) {
               configfile(dir, action, gv);
-            } else if (action.getName().equals(TEXT_FILE_TAG)) {
+            } else if (TEXT_FILE_TAG.equals(action.getName())) {
               textfile(dir, action, gv);
-            } else if (action.getName().equals(COPY_FILE_TAG)) {
+            } else if (COPY_FILE_TAG.equals(action.getName())) {
               copyfile(dir, action, gv);
-            } else if (action.getName().equals(XML_FILE_TAG)) {
+            } else if (XML_FILE_TAG.equals(action.getName())) {
               xmlfile(dir, action, gv);
-            } else if (action.getName().equals(DELETE_TAG)) {
+            } else if (DELETE_TAG.equals(action.getName())) {
               deletefile(dir, action, gv);
-            } else if (action.getName().equals(SCRIPT_TAG)) {
+            } else if (SCRIPT_TAG.equals(action.getName())) {
               executeScript(dir, action, gv);
             } else {
               displayMessageln("Unknown setting action : " + action.getName());
@@ -252,12 +244,36 @@ public class SilverpeasSettings {
       displayMessageln(NEW_LINE + "Silverpeas has been successfuly configured (" + new Date() +
           ").");
       bufLog.close();
-      System.out.println(NEW_LINE + "Silverpeas has been successfuly configured (" + new Date() +
-          ").");
+      System.out.println(
+          NEW_LINE + "Silverpeas has been successfuly configured (" + new Date() + ").");
     } catch (Exception e) {
       printError(e);
       e.printStackTrace(System.err);
     }
+  }
+
+  static GestionVariables loadConfiguration(File dir) throws IOException, AppBuilderException {
+    Properties defaultConfig = new Properties();
+    defaultConfig.load(SilverpeasSettings.class.getClassLoader().getResourceAsStream(
+        "default_config.properties"));
+    GestionVariables configuration;
+    Properties config = new Properties();
+    File configFile = new File(dir, "config.properties");
+    if (configFile.exists() && configFile.isFile()) {
+      config.load(new FileInputStream(configFile));
+      configuration = new GestionVariables(config, defaultConfig);
+    } else {
+      configuration = new GestionVariables(defaultConfig);
+      configFile = new File(dir, SILVERPEAS_CONFIG);
+      if (configFile.exists() && configFile.isFile()) {
+        XmlDocument fileXml = new XmlDocument(dir, SILVERPEAS_CONFIG);
+        fileXml.load();
+        Document doc = fileXml.getDocument();
+        Element root = doc.getRootElement();
+        loadVariablesFromXml(configuration, root);
+      }
+    }
+    return configuration;
   }
 
   // ---------------------------------------------------------------------
@@ -265,8 +281,8 @@ public class SilverpeasSettings {
    * @param errMsg
    * @see
    */
-  private static void configfile(String dir, Element eltConfigFile,
-      GestionVariables gv) throws Exception {
+  private static void configfile(String dir, Element eltConfigFile, GestionVariables gv) throws
+      Exception {
     String dirFile = dir + eltConfigFile.getAttributeValue(FILE_NAME_ATTRIB);
     dirFile = gv.resolveAndEvalString(dirFile);
     String typeFile = FileUtil.getExtension(dirFile);
@@ -434,14 +450,25 @@ public class SilverpeasSettings {
     return true;
   }
 
-  public static GestionVariables loadGlobalVariables(Element root) throws Exception {
-    GestionVariables gv = new GestionVariables();
-    // liste des var globales
+  /**
+   * Load variables defined in an XML file.
+   * @param configDir
+   * @param root
+   * @return
+   * @throws IOException
+   * @throws AppBuilderException
+   */
+  public static GestionVariables loadGlobalVariables(File configDir, Element root)
+      throws IOException, AppBuilderException {
+    GestionVariables gv = loadConfiguration(configDir);
     displayMessageln(NEW_LINE + "var :");
-    @SuppressWarnings("unchecked")
+    loadVariablesFromXml(gv, root);
+    return gv;
+  }
+
+  public static void loadVariablesFromXml(GestionVariables gv, Element root) throws IOException {
     List<Element> listeGlobalVars = root.getChildren("global-vars");
     for (Element eltGlobalVar : listeGlobalVars) {
-      @SuppressWarnings("unchecked")
       List<Element> listeVars = eltGlobalVar.getChildren("var");
       for (Element eltVar : listeVars) {
         String name = eltVar.getAttributeValue(FILE_NAME_ATTRIB);
@@ -455,7 +482,6 @@ public class SilverpeasSettings {
         displayMessageln("nom : " + name + "\t value : " + value);
       }
     }
-    return gv;
   }
 
   @SuppressWarnings("unchecked")
@@ -473,7 +499,8 @@ public class SilverpeasSettings {
       displayMessageln("Is File = " + f.isFile() + " - Extension: " + FileUtil.getExtension(f) +
           " - Nom =" + f.getName());
       if (!(SILVERPEAS_SETTINGS.equalsIgnoreCase(f.getName()) || SILVERPEAS_CONFIG
-          .equalsIgnoreCase(f.getName()))) {
+          .equalsIgnoreCase(f.
+          getName()))) {
         displayMessageln(f.getName());
         XmlDocument fXml = new XmlDocument(dirXml, f.getName());
         fXml.load();
@@ -521,6 +548,7 @@ public class SilverpeasSettings {
       String variable = variables.nextElement();
       binding.setVariable(variable, gv.getValue(variable));
     }
+    binding.setVariable("gestionVariables", gv);
     return binding;
   }
 }

@@ -24,37 +24,38 @@
 
 package org.silverpeas.SilverpeasSettings.xml.transform;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
-import javax.xml.transform.TransformerException;
-import org.w3c.dom.Document;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.InputStream;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
 import org.apache.commons.io.IOUtils;
-import static org.silverpeas.SilverpeasSettings.SilverpeasSettings.*;
 import org.silverpeas.SilverpeasSettings.xml.XmlTransformer;
-import com.silverpeas.xml.XmlTreeHandler;
-import java.io.File;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+import org.silverpeas.file.GestionVariables;
+import org.silverpeas.xml.XmlTreeHandler;
 import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
-import org.silverpeas.file.GestionVariables;
+
+import static org.silverpeas.SilverpeasSettings.SilverpeasSettings.displayMessageln;
 
 /**
  * This is the original transformer used by SilverpeasSettings since the 5.3 release of Silverpeas.
