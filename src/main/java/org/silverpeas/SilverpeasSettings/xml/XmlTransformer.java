@@ -22,9 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.SilverpeasSettings.xml;
+package org.silverpeas.SilverpeasSettings.xml;
 
-import com.silverpeas.file.GestionVariables;
+import org.silverpeas.file.GestionVariables;
 import org.jdom.Element;
 
 /**

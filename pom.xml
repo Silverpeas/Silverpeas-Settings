@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>19-SNAPSHOT</version>
+    <version>22-SNAPSHOT</version>
   </parent>
 
   <scm>
@@ -15,7 +15,7 @@
 
   <repositories>
     <repository>
-      <id>NexusSilverpeas</id>
+      <id>Silverpeas</id>
       <layout>default</layout>
       <name>Silverpeas Repository</name>
       <url>http://www.silverpeas.org/nexus/content/groups/silverpeas</url>
@@ -31,7 +31,7 @@
   <groupId>com.silverpeas.builder</groupId>
   <artifactId>silverpeas-settings</artifactId>
   <packaging>jar</packaging>
-  <version>1.9-SNAPSHOT</version>
+  <version>1.10-SNAPSHOT</version>
   <name>Silverpeas settings tool</name>
 
   <dependencies>
@@ -50,12 +50,18 @@
     <dependency>
       <groupId>com.silverpeas.builder</groupId>
       <artifactId>fileutil</artifactId>
-      <version>1.6-SNAPSHOT</version>
+      <version>1.7-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.builder</groupId>
       <artifactId>application-builder</artifactId>
-      <version>1.7-SNAPSHOT</version>
+      <version>1.8-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <version>1.8.5</version>
+      <type>jar</type>
     </dependency>
   </dependencies>
 
@@ -67,6 +73,27 @@
       </testResource>
     </testResources>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <index>true</index>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+              <mainClass>org.silverpeas.SilverpeasSettings.SilverpeasSettings</mainClass>
+              <classpathLayoutType>custom</classpathLayoutType>
+              <customClasspathLayout>lib/$${artifact.artifactId}.$${artifact.extension}</customClasspathLayout>
+            </manifest>
+            <manifestEntries>
+              <mode>development</mode>
+              <url>${project.url}</url>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.silverpeas.services</groupId>
         <artifactId>code-formatter-plugin</artifactId>
