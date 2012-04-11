@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>22-SNAPSHOT</version>
+    <version>22</version>
   </parent>
 
   <scm>
@@ -50,18 +50,16 @@
     <dependency>
       <groupId>com.silverpeas.builder</groupId>
       <artifactId>fileutil</artifactId>
-      <version>1.7-SNAPSHOT</version>
+      <version>1.7</version>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.builder</groupId>
       <artifactId>application-builder</artifactId>
-      <version>1.8-SNAPSHOT</version>
+      <version>1.8</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
-      <version>1.8.5</version>
-      <type>jar</type>
     </dependency>
   </dependencies>
 
