@@ -31,7 +31,7 @@
   <groupId>com.silverpeas.builder</groupId>
   <artifactId>silverpeas-settings</artifactId>
   <packaging>jar</packaging>
-  <version>1.10-SNAPSHOT</version>
+  <version>1.10</version>
   <name>Silverpeas settings tool</name>
 
   <dependencies>
