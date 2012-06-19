@@ -529,11 +529,11 @@ public class SilverpeasSettings {
 
   protected static void executeScript(String dir, Element scriptElt, GestionVariables gv) throws
       Exception {
-    String script = scriptElt.getAttributeValue(FILE_NAME_ATTRIB);
+    String script = gv.resolveAndEvalString(scriptElt.getAttributeValue(FILE_NAME_ATTRIB));
     if (scriptEngine != null) {
       Binding withVariables = bindToVariables(gv);
       if (dir != null && !dir.trim().isEmpty()) {
-        withVariables.setVariable("filesetRoot", dir);
+        withVariables.setVariable("filesetRoot", gv.resolveAndEvalString(dir));
       }
       scriptEngine.run(script, withVariables);
     } else {
