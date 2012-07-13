@@ -11,6 +11,7 @@
     <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Settings.git</connection>
     <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Settings.git</developerConnection>
     <url>https://github.com/Silverpeas/Silverpeas-Settings</url>
+    <tag>silverpeas-settings-1.11</tag>
   </scm>
 
   <repositories>
@@ -31,7 +32,7 @@
   <groupId>com.silverpeas.builder</groupId>
   <artifactId>silverpeas-settings</artifactId>
   <packaging>jar</packaging>
-  <version>1.11-SNAPSHOT</version>
+  <version>1.11</version>
   <name>Silverpeas settings tool</name>
 
   <dependencies>
