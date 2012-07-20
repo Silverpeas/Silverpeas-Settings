@@ -110,14 +110,14 @@ public class SilverpeasSettings {
   }
 
   public static char getXmlMode(String textualMode) {
-    if (textualMode == null || textualMode.equals("")) {
+    if (textualMode == null || textualMode.isEmpty()) {
       return XmlTreeHandler.MODE_UPDATE;
     }
     return _modeMap.get(textualMode.toLowerCase()).charValue();
   }
 
   public static String getXmlModeString(String textualMode) {
-    if (textualMode == null || textualMode.equals("")) {
+    if (textualMode == null || textualMode.isEmpty()) {
       return "default(update)";
     }
     return textualMode;

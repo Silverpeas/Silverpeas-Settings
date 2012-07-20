@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,7 +26,9 @@ package org.silverpeas.SilverpeasSettings.xml.origin;
 
 import java.io.File;
 import java.util.List;
+
 import org.jdom.Element;
+
 import org.silverpeas.SilverpeasSettings.xml.XmlTransformer;
 import org.silverpeas.applicationbuilder.XmlDocument;
 import org.silverpeas.file.BackupFile;
@@ -48,14 +50,12 @@ public class SilverpeasXmlTransformer implements XmlTransformer {
       throws Exception {
     String dirFile = dir + eltConfigFile.getAttributeValue(FILE_NAME_ATTRIB);
     // ici nouveaute t005 : evaluation dynamique
-    // dirFile = gv.resolveString( dirFile );
     dirFile = gv.resolveAndEvalString(dirFile);
     displayMessageln(dirFile);
     File dirFileFile = new File(dirFile);
     boolean backuped = false;
 
-    XmlDocument xmlDoc = new XmlDocument(dirFileFile.getParentFile(),
-        dirFileFile.getName());
+    XmlDocument xmlDoc = new XmlDocument(dirFileFile.getParentFile(), dirFileFile.getName());
     xmlDoc.load();
     getXPathEngine().setStartingElement(xmlDoc.getDocument().getRootElement());
     // liste des parametres a modifier
@@ -87,7 +87,7 @@ public class SilverpeasXmlTransformer implements XmlTransformer {
           String value = eltValue.getTextTrim();
           value = gv.resolveAndEvalString(value);
           String relativePath = eltValue.getAttributeValue(RELATIVE_VALUE_ATTRIB);
-          if (relativePath != null && !relativePath.equals("")) {
+          if (relativePath != null && !relativePath.isEmpty()) {
             relativePath = gv.resolveAndEvalString(relativePath);
             value = getRelativePath(relativePath, value);
           }
