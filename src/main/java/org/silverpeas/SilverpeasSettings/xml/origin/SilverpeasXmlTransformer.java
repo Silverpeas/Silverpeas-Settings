@@ -104,7 +104,7 @@ public class SilverpeasXmlTransformer implements XmlTransformer {
             backuped = true;
           }
           // action
-          if (childMode != null && !childMode.equals("")) {
+          if (childMode != null && !childMode.isEmpty()) {
             displayMessageln("\tmode:" + getXmlModeString(childMode));
             getXPathEngine().setMode(getXmlMode(childMode));
           } else {
@@ -118,7 +118,7 @@ public class SilverpeasXmlTransformer implements XmlTransformer {
         String value = eltParameter.getTextTrim();
         value = gv.resolveAndEvalString(value);
         String relativePath = eltParameter.getAttributeValue(RELATIVE_VALUE_ATTRIB);
-        if (relativePath != null && !relativePath.equals("")) {
+        if (relativePath != null && !relativePath.isEmpty()) {
           relativePath = gv.resolveAndEvalString(relativePath);
           value = getRelativePath(relativePath, value);
         }
