@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -45,15 +46,18 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.SilverpeasSettings.xml.XmlTransformer;
-import org.silverpeas.file.GestionVariables;
-import org.silverpeas.xml.XmlTreeHandler;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
+
+import org.silverpeas.SilverpeasSettings.xml.XmlTransformer;
+import org.silverpeas.file.GestionVariables;
+import org.silverpeas.xml.ClasspathEntityResolver;
+import org.silverpeas.xml.XmlTreeHandler;
 
 import static org.silverpeas.SilverpeasSettings.SilverpeasSettings.displayMessageln;
 
@@ -79,7 +83,9 @@ public class XPathTransformer implements XmlTransformer {
       displayMessageln(xmlFile);
       in = new BufferedInputStream(new FileInputStream(xmlFile));
       DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+      docFactory.setValidating(false);
       DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+      docBuilder.setEntityResolver(new ClasspathEntityResolver(null));
       doc = docBuilder.parse(in);
       applyTransformation(configuration, doc);
     } catch (SAXException ex) {
@@ -197,7 +203,6 @@ public class XPathTransformer implements XmlTransformer {
       target.getAttributes().setNamedItem(newAttribute);
     } else {
       Element newElement = doc.createElement(value.getLocation());
-      // result.setNodeValue(value.getValue());
       newElement.setTextContent(value.getValue());
       target.appendChild(newElement);
     }
