@@ -69,7 +69,7 @@ public class SilverpeasSettings {
   private static XPath _xpathEngine = null;
   private static final String[] TAGS_TO_MERGE = { "global-vars", "fileset", "script" };
   private static List<File> xmlFiles;
-  private static final String TOOL_VERSION = "SilverpeasSettings V5.0";
+  private static final String TOOL_VERSION = "Silverpeas Settings V5";
   public static final String DIR_SETTINGS = DirectoryLocator.getSilverpeasHome() +
       "/setup/settings";
   public static final String SILVERPEAS_SETTINGS = "SilverpeasSettings.xml";
@@ -187,8 +187,9 @@ public class SilverpeasSettings {
    * @see
    */
   public static void main(String[] args) {
+    int status = 0;
     try {
-      System.out.println("start settings of " + TOOL_VERSION + " (" + new Date() + ").");
+      System.out.println(TOOL_VERSION + " (" + new Date() + ").");
       File fileLog = new File(DirectoryLocator.getLogHome() + "/SilverpeasSettings.log");
       bufLog = new PrintWriter(new BufferedWriter(new FileWriter(fileLog.getAbsolutePath(), true)));
       displayMessageln(NEW_LINE +
@@ -249,7 +250,9 @@ public class SilverpeasSettings {
     } catch (Exception e) {
       printError(e);
       e.printStackTrace(System.err);
+      status = 1;
     }
+    System.exit(status);
   }
 
   static GestionVariables loadConfiguration(File dir) throws IOException, AppBuilderException {
